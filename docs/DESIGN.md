@@ -17,6 +17,11 @@ in [CLAUDE.md](../CLAUDE.md).
 | 7 | Shipping | Each phase pushes straight to `main`; GitHub Actions tests, then deploys to Pages |
 | 8 | Run length | Keep ~15 floors per act; tune for ~1 min per floor; trim to ~12 if runs run long |
 | 9 | Fonts | Chakra Petch (OFL licence) bundled from npm for headings; system font for body |
+| 10 | Test fight (Phase 3) | Starter deck + one of each sampler card vs Scrap Mite, Rust Lamprey, Scrap Mite |
+| 11 | Hand size | Max 10 cards; draws beyond that are skipped, created cards go to discard |
+| 12 | Power cards | Leave play when played (not discarded or exhausted) and install a `power` status |
+| 13 | Debuff timing | Weak / Vulnerable / Breach drop by 1 at the end of their owner's turn; Poison ticks at the start of its owner's turn, then drops by 1 |
+| 14 | Enemy Block | Resets at the start of the enemy's own turn (so it protects them during yours) |
 
 ## World
 
@@ -163,6 +168,26 @@ enemy({ id: 'scrap_mite', name: 'Scrap Mite', hp: [11, 15],
 ```
 
 (Exact helper names may change in Phase 3; the shape stays.)
+
+## Engine map (as built in Phase 3)
+
+| File | What it does |
+|---|---|
+| `src/engine/rng.ts` | Seeded RNG (sfc32 + cyrb128), named streams, seed codes |
+| `src/engine/types.ts` | Content definitions, combat state, commands, events |
+| `src/engine/defs.ts` | `defineCards/Statuses/Enemies/Relics`, `resolveCard` (applies upgrades), `cardNeedsTarget` |
+| `src/engine/effects/types.ts` | The effect vocabulary (`Effect`, `Amount`, `TargetSel`, `Condition`) |
+| `src/engine/effects/builders.ts` | Helpers used by content: `attack`, `block`, `apply`, `gain`, `spend`… |
+| `src/engine/effects/resolve.ts` | What each effect does |
+| `src/engine/effects/describe.ts` | Card / relic / status text generated from effects |
+| `src/engine/combat/core.ts` | Action queue, hooks (`fireTrigger`), damage/block/status/card primitives |
+| `src/engine/combat/damage.ts` | The one damage pipeline |
+| `src/engine/combat/enemies.ts` | Enemy move choice and intents |
+| `src/engine/combat/combat.ts` | Turn flow + public API: `createCombat`, `dispatchCombat`, `canPlayCard`, save/load |
+| `src/engine/combat/setup.ts` | `setupFromSeed` for stand-alone fights |
+
+Events are emitted in resolution order (hook "trigger" announcements are
+queued, not emitted early), so the UI can animate the event list as-is.
 
 ## Folder structure
 

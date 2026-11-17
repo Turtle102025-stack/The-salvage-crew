@@ -6,7 +6,7 @@ import './TitleScreen.css';
 const WORK_ORDER: { label: string; done: boolean }[] = [
   { label: 'Phase 1: Plan approved', done: true },
   { label: 'Phase 2: Dry dock (project setup)', done: true },
-  { label: 'Phase 3: Test fight (combat engine)', done: false },
+  { label: 'Phase 3: Test fight (combat engine)', done: true },
   { label: 'Phase 4: Battle screen & animations', done: false },
   { label: 'Phase 5: The run: map, rewards, shop, events', done: false },
   { label: 'Phase 6: Act 1 content, through the boss', done: false },
@@ -14,7 +14,7 @@ const WORK_ORDER: { label: string; done: boolean }[] = [
   { label: 'Phase 8: Acts 2 & 3, difficulty, sound, polish', done: false },
 ];
 
-export function TitleScreen() {
+export function TitleScreen({ onTestFight }: { onTestFight: () => void }) {
   return (
     <main className="title-screen">
       <header className="title-header">
@@ -33,12 +33,15 @@ export function TitleScreen() {
 
       <section className="work-order" aria-labelledby="work-order-heading">
         <h2 id="work-order-heading">
-          Work order <span className="work-order-status">In dry dock</span>
+          Work order <span className="work-order-status">Test fight ready</span>
         </h2>
         <p className="work-order-note">
-          The crew is still bolting the engine back on. Nothing to play yet: the
-          first test fight ships in Phase 3.
+          The engine turns over. Take Juno out for a test fight against some
+          local pests while the crew finishes the rest of the ship.
         </p>
+        <button className="title-cta" onClick={onTestFight}>
+          Start test fight
+        </button>
         <ul>
           {WORK_ORDER.map((item) => (
             <li key={item.label} className={item.done ? 'done' : undefined}>

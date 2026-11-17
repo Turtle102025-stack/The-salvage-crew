@@ -66,6 +66,12 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
   state). Saves carry a `saveVersion`.
 - **localStorage is touched only in `src/ui`** (save/load and settings).
 
+## Engine map
+
+See `docs/DESIGN.md` → "Engine map". Public API: `src/engine/index.ts`
+(`createCombat`, `dispatchCombat`, `getIntent`, `describeCard`…). Tests share
+helpers and test-only content in `tests/helpers.ts`.
+
 ## Content rules
 
 - Cards, relics, potions, statuses, enemies and events are **data** in

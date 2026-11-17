@@ -1,0 +1,450 @@
+/* Phase 3 bare-bones battle. Functional, on-theme, replaced in Phase 4. */
+
+.tf {
+  min-height: 100%;
+  padding: 16px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.tf button {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--steel-600);
+  border: 2px solid var(--space-950);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  box-shadow: 2px 2px 0 var(--space-950);
+}
+.tf button:hover:not(:disabled) {
+  background: var(--steel-500);
+}
+.tf button:focus-visible,
+.tf input:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+.tf button:disabled {
+  cursor: default;
+}
+
+/* --- Header --- */
+.tf-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+.tf-top h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tf .tf-link {
+  background: transparent;
+  box-shadow: none;
+  border-color: var(--steel-500);
+}
+.tf-seed {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+}
+.tf-seed form {
+  display: flex;
+  gap: 6px;
+}
+.tf-seed-code {
+  font-family: var(--font-display);
+  color: var(--amber);
+  letter-spacing: 0.1em;
+}
+.tf-seed input {
+  width: 9.5em;
+  font: inherit;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--space-800);
+  border: 2px solid var(--steel-500);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+}
+.tf-help {
+  color: var(--text-dim);
+  margin: 10px 0 14px;
+  font-size: 0.95rem;
+}
+
+/* --- Layout --- */
+.tf-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .tf-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.tf-board {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+/* --- Enemies --- */
+.tf-enemies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.tf .tf-enemy {
+  flex: 1 1 180px;
+  max-width: 240px;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  font-family: var(--font-body);
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  box-shadow: 0 0 0 2px var(--steel-600) inset, 4px 4px 0 var(--space-950);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+.tf .tf-enemy:hover:not(:disabled) {
+  background: var(--space-700);
+}
+.tf .tf-enemy.targetable {
+  box-shadow: 0 0 0 3px var(--card-attack) inset, 4px 4px 0 var(--space-950);
+  cursor: crosshair;
+}
+.tf .tf-enemy.dead {
+  opacity: 0.45;
+}
+.tf-intent {
+  justify-self: start;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--steel-600);
+  color: var(--text);
+}
+.tf-intent.attack {
+  background: var(--card-attack);
+  color: var(--space-950);
+}
+.tf-intent.block {
+  background: var(--block);
+  color: var(--space-950);
+}
+.tf-intent.buff {
+  background: var(--amber);
+  color: var(--space-950);
+}
+.tf-intent.debuff {
+  background: var(--card-power);
+  color: var(--space-950);
+}
+.tf-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.tf-name small {
+  font-weight: 500;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+.tf-dead {
+  color: var(--text-dim);
+  font-family: var(--font-display);
+}
+
+/* --- HP, block, statuses --- */
+.tf-hp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: 0.9rem;
+}
+.tf-hp-bar {
+  flex: 1 0 100%;
+  height: 10px;
+  background: var(--space-950);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.tf-hp-fill {
+  height: 100%;
+  background: var(--hp);
+  transition: width calc(0.3s / max(var(--anim-speed), 0.01)) ease-out;
+}
+.tf-block {
+  color: var(--space-950);
+  background: var(--block);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-weight: 700;
+}
+.tf-statuses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.tf-status {
+  font-size: 0.8rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--steel-400);
+  cursor: help;
+}
+.tf-status.buff {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.tf-status.debuff {
+  border-color: var(--card-power);
+  color: #c7adff;
+}
+.tf-status.power {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* --- Player --- */
+.tf-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  box-shadow: 0 0 0 2px var(--steel-600) inset;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.tf-energy {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: var(--font-display);
+  color: var(--text-dim);
+  cursor: help;
+}
+.tf-energy-num {
+  display: grid;
+  place-items: center;
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--space-950);
+  font-size: 1.4rem;
+  font-weight: 700;
+  border: 3px solid var(--space-950);
+}
+.tf-player-main {
+  flex: 1 1 220px;
+  display: grid;
+  gap: 6px;
+}
+.tf-relics {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tf-relics li {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  border: 2px solid var(--amber-deep);
+  color: var(--amber);
+  border-radius: 999px;
+  padding: 2px 10px;
+  cursor: help;
+}
+
+.tf-message {
+  margin: 0;
+  text-align: center;
+  color: var(--amber);
+  font-family: var(--font-display);
+}
+
+/* --- Hand --- */
+.tf-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  min-height: 150px;
+}
+.tf .tf-card {
+  width: 150px;
+  min-height: 150px;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  align-content: start;
+  text-align: left;
+  padding: 8px 10px 10px;
+  background: var(--space-700);
+  border: 3px solid var(--space-950);
+  border-top: 8px solid var(--steel-400);
+  border-radius: var(--radius-md);
+  box-shadow: 3px 3px 0 var(--space-950);
+  transition: transform calc(0.12s / max(var(--anim-speed), 0.01)) ease-out;
+}
+.tf .tf-card.attack {
+  border-top-color: var(--card-attack);
+}
+.tf .tf-card.skill {
+  border-top-color: var(--card-skill);
+}
+.tf .tf-card.power {
+  border-top-color: var(--card-power);
+}
+.tf .tf-card:hover:not(.unplayable) {
+  transform: translateY(-4px);
+}
+.tf .tf-card.selected {
+  transform: translateY(-10px);
+  box-shadow: 0 0 0 3px var(--amber), 3px 3px 0 var(--space-950);
+}
+.tf .tf-card.unplayable {
+  opacity: 0.55;
+}
+.tf-card-cost {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--space-950);
+  font-weight: 700;
+  border: 2px solid var(--space-950);
+}
+.tf-card-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.15;
+}
+.tf-card-type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+.tf-card-text {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+.tf-empty {
+  color: var(--text-dim);
+  align-self: center;
+}
+
+/* --- Controls --- */
+.tf-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.tf-piles {
+  color: var(--text-dim);
+  font-family: var(--font-display);
+}
+.tf .tf-end {
+  background: var(--amber);
+  color: var(--space-950);
+  font-weight: 700;
+  padding: 10px 22px;
+  font-size: 1.05rem;
+}
+.tf .tf-end:hover:not(:disabled) {
+  background: #ffbb45;
+}
+.tf .tf-end:disabled {
+  opacity: 0.4;
+}
+
+/* --- Result --- */
+.tf-result {
+  text-align: center;
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 0 0 3px var(--teal) inset, 6px 6px 0 var(--space-950);
+}
+.tf-result.defeat {
+  box-shadow: 0 0 0 3px var(--hp) inset, 6px 6px 0 var(--space-950);
+}
+.tf-result h2 {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.tf-result p {
+  margin: 0 0 8px;
+  color: var(--text-dim);
+}
+.tf-result-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* --- Log --- */
+.tf-log {
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.tf-log h2 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.tf-log ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  display: grid;
+  gap: 3px;
+}
+.tf-log li.turn {
+  color: var(--amber);
+  font-family: var(--font-display);
+  margin-top: 6px;
+}
