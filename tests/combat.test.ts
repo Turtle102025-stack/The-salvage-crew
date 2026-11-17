@@ -56,7 +56,7 @@ describe('turn flow', () => {
     const { state } = startFight({ enemies: ['hitter'] });
     setHand(state, ['t_strike']);
     const r = endTurn(endTurn(play(state, 't_strike', 'e0').state).state);
-    expect(r.state.stats).toEqual({ turns: 3, cardsPlayed: 1, damageTaken: 20 });
+    expect(r.state.stats).toEqual({ turns: 3, cardsPlayed: 1, damageTaken: 20, damageDealt: 10, potionsUsed: 0 });
   });
 });
 

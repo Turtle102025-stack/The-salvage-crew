@@ -1,0 +1,111 @@
+.relic-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.relic-icon {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--space-800);
+  border: 2px solid var(--amber-deep);
+  cursor: help;
+  flex: none;
+}
+.relic-icon.rarity-uncommon { border-color: var(--rarity-uncommon); }
+.relic-icon.rarity-rare { border-color: var(--rarity-rare); }
+.relic-icon.rarity-boss { border-color: var(--hp); }
+.relic-icon.rarity-shop { border-color: var(--teal); }
+.relic-icon[data-flash] {
+  animation: relic-flash calc(1s / max(var(--anim-speed), 0.01) * 0.6) ease-out;
+}
+@keyframes relic-flash {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 var(--amber); }
+  40% { transform: scale(1.35); box-shadow: 0 0 14px 4px var(--amber); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+}
+
+.potion-bar {
+  display: flex;
+  gap: 4px;
+}
+.potion-slot-wrap {
+  position: relative;
+}
+.potion-slot {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--space-800);
+  border: 2px solid var(--steel-500);
+}
+.potion-slot:hover {
+  border-color: var(--teal);
+}
+.potion-slot.empty {
+  cursor: default;
+  border-style: dashed;
+  opacity: 0.6;
+}
+.potion-empty {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--steel-500);
+}
+.potion-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: grid;
+  gap: 4px;
+  min-width: 130px;
+  padding: 8px;
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 2px var(--steel-500) inset, 4px 4px 0 var(--space-950);
+  text-align: center;
+}
+.potion-menu strong {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--amber);
+}
+.potion-menu button {
+  font-family: var(--font-display);
+  color: var(--text);
+  background: var(--steel-600);
+  border: 2px solid var(--space-950);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.potion-menu button:hover:not(:disabled) {
+  background: var(--steel-500);
+}
+.potion-menu button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.credits {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-display);
+  color: var(--rarity-rare);
+}
+.credits b {
+  font-weight: 700;
+}
+
+.modal-wide {
+  width: min(1180px, 100%);
+}

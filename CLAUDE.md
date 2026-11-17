@@ -10,8 +10,8 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
   avoid jargon, and give step-by-step instructions they can follow.
 - Work in the phases listed in `docs/BRIEF.md`. At the end of each phase:
   1. run `npm run check` (type check + tests + build) and fix anything red;
-  2. update the work-order list on the title screen (`src/ui/screens/TitleScreen.tsx`)
-     and `BUILD_PHASE` in `src/engine/version.ts` until the real menu replaces it;
+  2. bump `GAME_VERSION` / `BUILD_PHASE` in `src/engine/version.ts` (shown on
+     the main menu);
   3. tell the owner, in plain steps, how to play and test the new work
      (normally: open the live link, then a short checklist);
   4. commit and push to `main` (this is the agreed workflow; GitHub Actions
@@ -64,7 +64,11 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
   ×0.75 Weak → ×1.5 Vulnerable → floor (min 0) → Block → HP.
 - **State is plain, JSON-serializable data** (no classes, functions or Maps in
   state). Saves carry a `saveVersion`.
-- **localStorage is touched only in `src/ui`** (save/load and settings).
+- **localStorage is touched only in `src/ui`** (save/load and settings), always
+  through `src/ui/storage.ts` / `src/ui/save.ts` (wrapped in try/catch).
+- **Runs** follow the same rules as combat: `dispatchRun` is pure, all
+  randomness uses the run's RNG streams, and wall-clock time (play time,
+  history dates) lives only in the UI layer.
 
 ## Engine map
 

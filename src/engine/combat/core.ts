@@ -46,6 +46,7 @@ export type Action =
   | { kind: 'hit'; ctx: Ctx; base: number; targetId?: CreatureId; random?: boolean }
   | { kind: 'combatStart' }
   | { kind: 'playCard'; uid: number; target?: CreatureId; x: number }
+  | { kind: 'usePotion'; slot: number; target?: CreatureId }
   | { kind: 'finishCard'; uid: number }
   | { kind: 'playerTurnStart' }
   | { kind: 'playerTurnEnd' }
@@ -181,13 +182,15 @@ interface Listener {
   owner: CreatureId;
   source: SourceRef;
   hooks: readonly Hook[];
+  /** Stable key for `every` counters. */
+  key: string;
 }
 
 function statusListeners(r: Runner, c: Creature): Listener[] {
   const out: Listener[] = [];
   for (const id of Object.keys(c.statuses)) {
     const hooks = r.content.statuses[id]?.hooks;
-    if (hooks?.length) out.push({ owner: c.id, source: { kind: 'status', id, owner: c.id }, hooks });
+    if (hooks?.length) out.push({ owner: c.id, source: { kind: 'status', id, owner: c.id }, hooks, key: `status:${c.id}:${id}` });
   }
   return out;
 }
@@ -195,7 +198,7 @@ function statusListeners(r: Runner, c: Creature): Listener[] {
 function relicListeners(r: Runner): Listener[] {
   return r.state.relics.flatMap((id) => {
     const hooks = r.content.relics[id]?.hooks;
-    return hooks?.length ? [{ owner: 'player', source: { kind: 'relic', id } as SourceRef, hooks }] : [];
+    return hooks?.length ? [{ owner: 'player', source: { kind: 'relic', id } as SourceRef, hooks, key: `relic:${id}` }] : [];
   });
 }
 
@@ -221,9 +224,14 @@ export function fireTrigger(
   }
 
   for (const listener of listeners) {
-    const matching = listener.hooks.filter(
-      (h) => h.on === trigger && (h.if?.cardType === undefined || h.if.cardType === opts.cardType),
-    );
+    const matching = listener.hooks.filter((h, index) => {
+      if (h.on !== trigger || (h.if?.cardType !== undefined && h.if.cardType !== opts.cardType)) return false;
+      if (!h.every) return true;
+      const key = `${listener.key}#${index}`;
+      const count = (r.state.counters[key] ?? 0) + 1;
+      r.state.counters[key] = count % h.every;
+      return count >= h.every;
+    });
     if (matching.length === 0) continue;
     enqueue(r, { kind: 'announce', event: { type: 'trigger', source: listener.source } });
     const ctx: Ctx = { actor: listener.owner, source: listener.source };
@@ -309,6 +317,7 @@ export function loseHp(r: Runner, targetId: CreatureId, amount: number, sourceId
 function afterHpLoss(r: Runner, t: Creature, hpLost: number, sourceId?: CreatureId): void {
   if (hpLost > 0) {
     if (t.side === 'player') r.state.stats.damageTaken += hpLost;
+    else r.state.stats.damageDealt += hpLost;
     fireTrigger(r, 'damageTaken', { owner: t.id, ...(sourceId !== undefined ? { other: sourceId } : {}) });
   }
   if (t.hp <= 0 && !t.dead) {

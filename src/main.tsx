@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import '@fontsource/chakra-petch/latin-500.css';
 import '@fontsource/chakra-petch/latin-700.css';
 import './ui/styles/theme.css';
+import './ui/styles/ui.css';
 import { App } from './ui/App';
 
 const root = document.getElementById('root');

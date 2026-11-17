@@ -196,3 +196,76 @@ export function botFight(content: Content, start: CombatResult, maxCommands = 50
   }
   return { state, events, commands };
 }
+
+// --- Runs -------------------------------------------------------------------
+
+import { availableNodes, choiceAvailable, createRun, dispatchRun, selectableCards, type RunCommand, type RunState } from '../src/engine';
+
+/** A simple, deterministic bot that plays a whole run (used by tests). */
+export function botRunCommand(content: Content, run: RunState): RunCommand {
+  const s = run.screen;
+  switch (s.type) {
+    case 'actIntro':
+      return { type: 'proceed' };
+    case 'map': {
+      const options = availableNodes(run.map, run.position).map((id) => run.map.nodes[id]!);
+      const low = run.hp < run.maxHp * 0.5;
+      const pref = low ? ['rest', 'shop', 'event', 'treasure', 'battle', 'elite', 'boss'] : ['elite', 'treasure', 'battle', 'event', 'rest', 'shop', 'boss'];
+      options.sort((a, b) => pref.indexOf(a.type) - pref.indexOf(b.type) || a.col - b.col);
+      return { type: 'chooseNode', node: options[0]!.id };
+    }
+    case 'combat': {
+      const slot = s.combat.potions.findIndex((p) => p !== null);
+      if (slot >= 0 && s.combat.player.hp < s.combat.player.maxHp * 0.4) {
+        const target = s.combat.enemies.find((e) => !e.dead)?.id;
+        return { type: 'usePotion', slot, ...(target ? { target } : {}) };
+      }
+      return { type: 'combat', command: botCommand(content, s.combat) };
+    }
+    case 'reward':
+    case 'treasure': {
+      if (s.type === 'treasure' && !s.opened) return { type: 'openChest' };
+      const r = s.reward!;
+      if (r.gold !== null) return { type: 'takeGold' };
+      if (r.relic) return { type: 'takeRelic' };
+      if (r.bossRelics) return { type: 'takeRelic', index: 0 };
+      if (r.potion && run.potions.includes(null)) return { type: 'takePotion' };
+      const choice = r.cards.findIndex((c) => !c.taken);
+      if (choice >= 0) return { type: 'takeCard', reward: choice, option: 0 };
+      return { type: 'proceed' };
+    }
+    case 'rest':
+      if (s.done) return { type: 'proceed' };
+      return run.hp < run.maxHp * 0.6 || selectableCards(content, run, 'upgrade').length === 0 ? { type: 'rest' } : { type: 'smith' };
+    case 'shop': {
+      const i = s.shop.cards.findIndex((c) => !c.sold && c.price <= run.gold);
+      if (i >= 0) return { type: 'buy', kind: 'card', index: i };
+      return { type: 'proceed' };
+    }
+    case 'event': {
+      if (s.event.result !== null) return { type: 'proceed' };
+      const scene = content.events[s.event.id]!.scenes[s.event.scene]!;
+      const i = scene.choices.findIndex((c) => choiceAvailable(run, c.requires));
+      return { type: 'eventChoice', index: Math.max(0, i) };
+    }
+    case 'cardSelect': {
+      const eligible = selectableCards(content, run, s.purpose);
+      return { type: 'selectCards', uids: eligible.slice(0, s.count).map((c) => c.uid) };
+    }
+    case 'gameOver':
+      throw new Error('Run is over');
+  }
+}
+
+export function botRun(content: Content, seed: string, difficulty = 0, maxCommands = 4000) {
+  let run = createRun(content, { seed, characterId: 'rigger', difficulty }).run;
+  const commands: RunCommand[] = [];
+  while (run.phase === 'active' && commands.length < maxCommands) {
+    const command = botRunCommand(content, run);
+    const result = dispatchRun(content, run, command);
+    if (result.error) throw new Error(`Bot run command ${JSON.stringify(command)} rejected on ${run.screen.type}: ${result.error}`);
+    commands.push(command);
+    run = result.run;
+  }
+  return { run, commands };
+}

@@ -208,6 +208,32 @@ queued, not emitted early), so the UI can animate the event list as-is.
 - Settings (`src/ui/settings.tsx`): animation speed, sound, volume; saved in
   localStorage via `src/ui/storage.ts` (all access wrapped in try/catch).
 
+## Run loop (Phase 5)
+
+- `src/engine/run/run.ts`: `createRun` / `dispatchRun(content, run, command)`.
+  Pure like combat; same seed + same commands = same run. Screens: actIntro,
+  map, combat, reward, rest, shop, event, treasure, cardSelect, gameOver.
+- `map.ts`: 15 floors × 7 columns, 6 non-crossing paths; floor 1 fights,
+  floor 9 Cargo Pod, floor 15 Docking Bay, no Hazards/rest before floor 6,
+  no Hazard/rest/shop/treasure twice in a row; boss on top.
+- `pools.ts`: card rarity rolls (common 60 / uncommon 37 / rare 3 for fights,
+  rare pity timer), relic and potion picks. `difficulty.ts`: Hazard levels 0–5.
+- Rewards: fights 10–20 Credits, Hazards 25–35 + Salvage, bosses 95–105 +
+  1 of 3 boss Salvage; card pick 1 of 3; Canister drop chance starts at 40%
+  (−10% when one drops, +10% when not).
+- Rest: heal 30% max HP (25% at Hazard 2+) or upgrade a card.
+- Trader: 5 cards (one on sale), 3 Salvage, 3 Canisters, one card removal per
+  visit (75 Credits, +25 each time).
+- Events: `EventDef` scenes and choices with `RunEffect`s; choice effects are
+  listed automatically (`describeRunEffects`).
+- New act: heal 75% of missing HP (50% at Hazard 4+), new map.
+- RNG streams: map, rewards, shuffle, enemyAI, events, shop, potions, misc,
+  encounters.
+- UI: `src/ui/run/RunView.tsx` (HUD, screen switching, autosave after every
+  command and on tab close, history on run end), `MapView.tsx`, `screens.tsx`.
+  Saves: `src/ui/save.ts` (`salvage-crew.run.v1`, profile in
+  `salvage-crew.profile.v1`).
+
 ## Folder structure
 
 ```

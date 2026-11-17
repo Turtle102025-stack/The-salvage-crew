@@ -62,6 +62,8 @@ export interface HookFilter {
 export interface Hook {
   on: Trigger;
   if?: HookFilter;
+  /** Only fire every Nth time this hook matches (counted per fight). */
+  every?: number;
   effects: Effect[];
 }
 
@@ -96,6 +98,26 @@ export interface StatusDef {
 
 export type RelicRarity = 'starter' | 'common' | 'uncommon' | 'rare' | 'boss' | 'shop';
 
+/** Run-level effects of a relic (applied outside of combat, or to combat setup). */
+export interface RelicRunMods {
+  /** One-off when picked up. */
+  maxHpOnPickup?: number;
+  healOnPickup?: number;
+  goldOnPickup?: number;
+  /** Ongoing. */
+  potionSlots?: number;
+  maxEnergy?: number;
+  drawPerTurn?: number;
+  /** Extra % of max HP healed when resting. */
+  restHealBonus?: number;
+  /** Fraction off shop prices (0.2 = 20% off). */
+  shopDiscount?: number;
+  /** Extra options in card rewards. */
+  cardChoices?: number;
+  goldAfterCombat?: number;
+  healAfterCombat?: number;
+}
+
 export interface RelicDef {
   id: string;
   name: string;
@@ -103,6 +125,7 @@ export interface RelicDef {
   /** Character id or 'neutral'. */
   character: string;
   hooks: Hook[];
+  run?: RelicRunMods;
   /** Hand-written description; leave out to generate it from the hooks. */
   description?: string;
   flavor?: string;
@@ -135,6 +158,81 @@ export interface EnemyDef {
   flavor?: string;
 }
 
+export type PotionRarity = 'common' | 'uncommon' | 'rare';
+
+export interface PotionDef {
+  id: string;
+  name: string;
+  rarity: PotionRarity;
+  /** What it does in combat. */
+  effects: Effect[];
+  /** Usable outside combat too (e.g. healing). */
+  outOfCombat?: RunEffect[];
+  description?: string;
+  flavor?: string;
+}
+
+/** Changes to the run itself (events, rewards, relic pickups). */
+export type RunEffect =
+  | { type: 'gold'; amount: number }
+  /** Positive heals, negative loses HP (never below 1 outside combat). */
+  | { type: 'hp'; amount: number }
+  /** Heal a % of max HP. */
+  | { type: 'healPercent'; percent: number }
+  | { type: 'maxHp'; amount: number }
+  | { type: 'addCard'; card: string; upgraded?: boolean; count?: number }
+  | { type: 'addRandomCard'; rarity?: CardRarity; cardType?: CardType; upgraded?: boolean }
+  | { type: 'relic'; relic?: string; rarity?: RelicRarity }
+  | { type: 'potion'; potion?: string }
+  | { type: 'selectCards'; purpose: CardSelectPurpose; count: number }
+  | { type: 'upgradeRandom'; count: number }
+  | { type: 'fight'; enemies: string[]; reward?: 'battle' | 'elite' }
+  | { type: 'chance'; percent: number; then: RunEffect[]; else?: RunEffect[] };
+
+export type CardSelectPurpose = 'upgrade' | 'remove' | 'transform' | 'duplicate';
+
+export interface EventChoice {
+  /** Short in-world label ("Pry it open"); the effects are listed automatically. */
+  label: string;
+  requires?: { gold?: number; hp?: number; relic?: string };
+  effects: RunEffect[];
+  /** Scene to go to next; omit to end the event. */
+  next?: string;
+  /** Text shown after choosing (when the event ends). */
+  result?: string;
+}
+
+export interface EventScene {
+  text: string;
+  choices: EventChoice[];
+}
+
+export interface EventDef {
+  id: string;
+  name: string;
+  /** Acts this event can appear in. */
+  acts: number[];
+  /** Icon shown with the event. */
+  art?: string;
+  scenes: Record<string, EventScene>;
+}
+
+export interface Encounter {
+  id: string;
+  name?: string;
+  enemies: string[];
+  weight?: number;
+}
+
+export interface ActDef {
+  id: number;
+  name: string;
+  /** Short description shown at the start of the act. */
+  intro: string;
+  encounters: { weak: Encounter[]; normal: Encounter[]; elite: Encounter[]; boss: Encounter[] };
+  events: string[];
+}
+
 export interface CharacterDef {
   id: string;
   name: string;
@@ -152,6 +250,9 @@ export interface Content {
   relics: Record<string, RelicDef>;
   enemies: Record<string, EnemyDef>;
   characters: Record<string, CharacterDef>;
+  potions: Record<string, PotionDef>;
+  events: Record<string, EventDef>;
+  acts: ActDef[];
 }
 
 // ---------------------------------------------------------------------------
@@ -199,6 +300,9 @@ export interface CombatStats {
   cardsPlayed: number;
   /** HP the player lost this combat. */
   damageTaken: number;
+  /** HP enemies lost this combat. */
+  damageDealt: number;
+  potionsUsed: number;
 }
 
 export interface CombatRng {
@@ -224,6 +328,10 @@ export interface CombatState {
   /** Cards being played right now (between paying and discarding). */
   limbo: CardInstance[];
   relics: string[];
+  /** Potion slots (null = empty). */
+  potions: (string | null)[];
+  /** Hook counters for `every` hooks, by listener key. */
+  counters: Record<string, number>;
   rng: CombatRng;
   nextUid: number;
   stats: CombatStats;
@@ -237,8 +345,12 @@ export interface CombatSetup {
   relics: string[];
   enemies: string[];
   rng: CombatRng;
+  potions?: (string | null)[];
   maxEnergy?: number;
   drawPerTurn?: number;
+  /** Difficulty: enemy max HP multiplier and bonus Strength. */
+  enemyHpMult?: number;
+  enemyStrength?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -247,6 +359,8 @@ export interface CombatSetup {
 
 export type CombatCommand =
   | { type: 'playCard'; uid: number; target?: CreatureId }
+  | { type: 'usePotion'; slot: number; target?: CreatureId }
+  | { type: 'discardPotion'; slot: number }
   | { type: 'endTurn' };
 
 export type SourceRef =
@@ -254,6 +368,7 @@ export type SourceRef =
   | { kind: 'relic'; id: string }
   | { kind: 'status'; id: string; owner: CreatureId }
   | { kind: 'move'; enemy: CreatureId; move: string }
+  | { kind: 'potion'; slot: number; id: string }
   | { kind: 'system' };
 
 export type PileName = 'draw' | 'hand' | 'discard' | 'exhaust' | 'removed';
@@ -267,6 +382,8 @@ export type CombatEvent =
   | { type: 'handFull' }
   | { type: 'shuffle'; count: number }
   | { type: 'playCard'; uid: number; card: string; target?: CreatureId }
+  | { type: 'usePotion'; slot: number; potion: string; target?: CreatureId }
+  | { type: 'discardPotion'; slot: number; potion: string }
   | { type: 'cardMoved'; uid: number; card: string; to: PileName }
   | { type: 'cardCreated'; uid: number; card: string; to: PileName }
   | { type: 'damage'; source?: CreatureId; target: CreatureId; amount: number; blocked: number; hpLost: number; attack: boolean }

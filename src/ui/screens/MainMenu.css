@@ -109,48 +109,123 @@
   to { transform: rotate(360deg); }
 }
 
-/* --- Work order panel --- */
-.work-order {
-  width: min(520px, 100%);
-  background: var(--space-800);
-  border: var(--outline);
-  border-radius: var(--radius-md);
-  box-shadow: 0 0 0 2px var(--steel-600) inset, 6px 6px 0 var(--space-950);
-  padding: 18px 20px;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
-.work-order h2 {
-  margin: 0 0 6px;
-  font-size: 1.1rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.title-footer {
+  font-size: 0.8rem;
+  color: var(--steel-400);
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
 }
 
-.work-order-status {
+.menu-buttons {
+  width: min(380px, 100%);
+  display: grid;
+  gap: 10px;
+}
+.title-cta small {
   font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--space-950);
-  background: var(--amber);
-  padding: 2px 8px;
-  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 500;
 }
-
-.work-order-note {
-  margin: 0 0 12px;
+.menu-button {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--space-800);
+  border: 3px solid var(--space-950);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  box-shadow: 0 0 0 2px var(--steel-600) inset, 4px 4px 0 var(--space-950);
+}
+.menu-button:hover {
+  background: var(--space-700);
+  box-shadow: 0 0 0 2px var(--amber) inset, 4px 4px 0 var(--space-950);
+}
+.menu-button:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+.new-run {
+  display: grid;
+  gap: 14px;
+}
+.new-run label {
+  display: grid;
+  gap: 4px;
+}
+.new-run input[type='text'],
+.new-run input:not([type]) {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--space-900);
+  border: 2px solid var(--steel-500);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.new-run fieldset {
+  border: 2px solid var(--steel-600);
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: 6px;
+  padding: 8px 12px 12px;
+  margin: 0;
+}
+.new-run legend {
+  font-family: var(--font-display);
   color: var(--text-dim);
+  padding: 0 4px;
+}
+.hazard-option {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 8px !important;
+  font-size: 0.9rem;
+}
+.hazard-option.locked {
+  opacity: 0.5;
+}
+.new-run-char p {
+  margin: 4px 0 0;
+}
+.warn {
+  margin: 0;
+  color: var(--amber);
+}
+.help p,
+.help li {
+  line-height: 1.55;
+}
+.help h3 {
+  margin: 14px 0 4px;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   font-size: 0.95rem;
+}
+.help ul {
+  margin: 0;
+  padding-left: 1.2em;
 }
 
 .title-cta {
-  display: block;
-  width: 100%;
-  margin: 0 0 16px;
+  justify-items: center;
+  gap: 2px;
   padding: 12px 16px;
+  font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -172,57 +247,11 @@
   outline: 3px solid var(--teal);
   outline-offset: 3px;
 }
-
-.work-order ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
+.title-screen .title-art {
+  width: min(560px, 100%);
+  max-height: 36vh;
 }
-
-.work-order li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-dim);
-  font-size: 0.95rem;
-}
-
-.work-order li.done {
-  color: var(--text);
-}
-
-.work-order .check {
-  flex: none;
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border: 2px solid var(--steel-400);
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.work-order li.done .check {
-  background: var(--teal);
-  border-color: var(--teal);
-  color: var(--space-950);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-.title-footer {
-  font-size: 0.8rem;
-  color: var(--steel-400);
-  font-family: var(--font-display);
-  letter-spacing: 0.06em;
+.title-screen {
+  gap: 14px;
+  padding-top: 24px;
 }

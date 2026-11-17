@@ -7,8 +7,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import {
   canPlayCard,
   cardNeedsTarget,
-  describeRelic,
   describeStatus,
+  effectsUseTarget,
   getIntent,
   resolveCard,
   type CardInstance,
@@ -22,7 +22,8 @@ import { EnemyArt } from '../art/EnemyArt';
 import { Glyph } from '../art/glyphs';
 import { PlayerArt } from '../art/PlayerArt';
 import { StageBackdrop } from '../art/StageBackdrop';
-import { enemyArt, INTENT_ART, relicArt, statusArt } from '../art/specs';
+import { enemyArt, INTENT_ART, statusArt } from '../art/specs';
+import { PotionBar, RelicBar } from '../components/Bits';
 import { formatEvents } from '../combat/log';
 import { creatureLabel } from '../combat/names';
 import { CardView } from '../components/Card';
@@ -56,6 +57,8 @@ export interface BattleScreenProps {
   overlay?: ReactNode;
   /** Which act's backdrop to show. */
   act?: number;
+  onUsePotion?: (slot: number, target?: CreatureId) => void;
+  onDiscardPotion?: (slot: number) => void;
 }
 
 type FxTone = 'dmg' | 'block' | 'heal' | 'buff' | 'debuff' | 'info' | 'big';
@@ -256,6 +259,7 @@ export function BattleScreen(props: BattleScreenProps) {
 
   // --- Input ------------------------------------------------------------------
   const [selected, setSelected] = useState<number | null>(null);
+  const [potionSel, setPotionSel] = useState<number | null>(null);
   const [target, setTarget] = useState<CreatureId | null>(null);
   const [dragging, setDragging] = useState<number | null>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -281,9 +285,30 @@ export function BattleScreen(props: BattleScreenProps) {
 
   const cancel = useCallback(() => {
     setSelected(null);
+    setPotionSel(null);
     setTarget(null);
     setHint(null);
   }, []);
+
+  const usePotion = useCallback(
+    (slot: number) => {
+      if (inputLocked) return;
+      const id = latest.current.potions[slot];
+      const def = id ? content.potions[id] : undefined;
+      if (!def) return;
+      const living = latest.current.enemies.filter((e) => !e.dead);
+      if (effectsUseTarget(def.effects) && living.length > 1) {
+        setSelected(null);
+        setPotionSel(slot);
+        setTarget(living[0]?.id ?? null);
+        setHint(`Choose a target for ${def.name}.`);
+        return;
+      }
+      cancel();
+      props.onUsePotion?.(slot);
+    },
+    [inputLocked, content, cancel, props],
+  );
 
   const play = useCallback(
     (uid: number, targetId?: CreatureId | null) => {
@@ -361,7 +386,8 @@ export function BattleScreen(props: BattleScreenProps) {
           break;
         case 'ArrowLeft':
         case 'ArrowRight': {
-          if (selected === null || !needsTarget(selected) || livingIds.length === 0) return;
+          if ((selected === null || !needsTarget(selected)) && potionSel === null) return;
+          if (livingIds.length === 0) return;
           e.preventDefault();
           const i = Math.max(0, livingIds.indexOf(target ?? ''));
           const next = (i + (e.key === 'ArrowRight' ? 1 : livingIds.length - 1)) % livingIds.length;
@@ -370,6 +396,13 @@ export function BattleScreen(props: BattleScreenProps) {
         }
         case 'Enter':
         case ' ':
+          if (potionSel !== null && target) {
+            e.preventDefault();
+            const slot = potionSel;
+            cancel();
+            props.onUsePotion?.(slot, target);
+            return;
+          }
           if (selected === null) return;
           e.preventDefault();
           play(selected, needsTarget(selected) ? target : undefined);
@@ -380,7 +413,7 @@ export function BattleScreen(props: BattleScreenProps) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [busy, flush, pileView, showLog, view.hand, select, endTurn, cancel, selected, needsTarget, livingIds, target, play]);
+  }, [busy, flush, pileView, showLog, view.hand, select, endTurn, cancel, selected, needsTarget, livingIds, target, play, potionSel, props]);
 
   // Drop selection if the card left the hand.
   useEffect(() => {
@@ -440,7 +473,7 @@ export function BattleScreen(props: BattleScreenProps) {
   );
 
   // --- Rendering --------------------------------------------------------------
-  const targeting = selected !== null && needsTarget(selected);
+  const targeting = (selected !== null && needsTarget(selected)) || potionSel !== null;
   const n = view.hand.length;
 
   // Overlap the cards just enough to fit the hand area.
@@ -468,32 +501,18 @@ export function BattleScreen(props: BattleScreenProps) {
           {props.topLeft}
           <span className="battle-turn">Turn {Math.max(view.turn, 1)}</span>
         </div>
-        <div className="battle-relics" aria-label="Relics">
-          {live.relics.map((id) => {
-            const def = content.relics[id];
-            const art = relicArt(id);
-            return (
-              <Tooltip
-                key={id}
-                side="bottom"
-                content={
-                  <TipBody title={def?.name ?? id}>
-                    {def ? describeRelic(content, def) : ''}
-                    {def?.flavor ? (
-                      <>
-                        {'\n\n'}
-                        <em>{def.flavor}</em>
-                      </>
-                    ) : null}
-                  </TipBody>
-                }
-              >
-                <span className="relic-icon" key={relicFlash[id] ?? 0} data-flash={relicFlash[id] ? 'yes' : undefined} tabIndex={0}>
-                  <Glyph name={art.glyph} color={art.color} color2={art.color2} size="100%" />
-                </span>
-              </Tooltip>
-            );
-          })}
+        <div className="battle-relics">
+          <RelicBar content={content} relics={live.relics} flashes={relicFlash} />
+          {live.potions.length > 0 && (
+            <PotionBar
+              content={content}
+              potions={live.potions}
+              inCombat
+              disabled={inputLocked}
+              onUse={usePotion}
+              onDiscard={(slot) => props.onDiscardPotion?.(slot)}
+            />
+          )}
           {props.extras}
         </div>
         <div className="battle-top-right">
@@ -542,6 +561,12 @@ export function BattleScreen(props: BattleScreenProps) {
                   e.stopPropagation();
                   if (busy && !targeting) {
                     flush();
+                    return;
+                  }
+                  if (potionSel !== null && !enemy.dead) {
+                    const slot = potionSel;
+                    cancel();
+                    props.onUsePotion?.(slot, enemy.id);
                     return;
                   }
                   if (targeting && selected !== null && !enemy.dead) play(selected, enemy.id);

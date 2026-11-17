@@ -8,7 +8,7 @@
  * resolves everything a command causes (including the whole enemy turn) and
  * returns the new state plus the list of events for the UI to animate.
  */
-import { resolveCard, cardNeedsTarget } from '../defs';
+import { resolveCard, cardNeedsTarget, effectsUseTarget } from '../defs';
 import { resolveEffect } from '../effects/resolve';
 import { nextInt, shuffleInPlace } from '../rng';
 import type { CardInstance, CombatCommand, CombatResult, CombatSetup, CombatState, Content, Creature } from '../types';
@@ -118,6 +118,21 @@ function resolveAction(r: Runner, action: Action): void {
       enqueueEffects(r, resolved.effects, ctx);
       fireTrigger(r, 'cardPlayed', { cardType: def.type, ...(action.target ? { other: action.target } : {}) });
       enqueue(r, { kind: 'finishCard', uid: card.uid });
+      return;
+    }
+
+    case 'usePotion': {
+      const id = s.potions[action.slot];
+      const def = id ? r.content.potions[id] : undefined;
+      if (!id || !def) return;
+      s.potions[action.slot] = null;
+      s.stats.potionsUsed++;
+      emit(r, { type: 'usePotion', slot: action.slot, potion: id, ...(action.target ? { target: action.target } : {}) });
+      enqueueEffects(r, def.effects, {
+        actor: 'player',
+        source: { kind: 'potion', slot: action.slot, id },
+        ...(action.target ? { target: action.target } : {}),
+      });
       return;
     }
 
@@ -264,7 +279,9 @@ export function createCombat(content: Content, setup: CombatSetup): CombatResult
   const enemies: Creature[] = setup.enemies.map((id, i) => {
     const def = content.enemies[id];
     if (!def) throw new Error(`Unknown enemy "${id}"`);
-    const hp = nextInt(rng.misc, def.hp[0], def.hp[1]);
+    const hp = Math.max(1, Math.round(nextInt(rng.misc, def.hp[0], def.hp[1]) * (setup.enemyHpMult ?? 1)));
+    const statuses: Record<string, number> = { ...(def.startStatuses ?? {}) };
+    if (setup.enemyStrength) statuses.strength = (statuses.strength ?? 0) + setup.enemyStrength;
     return {
       id: `e${i}`,
       side: 'enemy',
@@ -273,7 +290,7 @@ export function createCombat(content: Content, setup: CombatSetup): CombatResult
       hp,
       maxHp: hp,
       block: 0,
-      statuses: { ...(def.startStatuses ?? {}) },
+      statuses,
       dead: false,
       moveHistory: [],
     };
@@ -308,9 +325,11 @@ export function createCombat(content: Content, setup: CombatSetup): CombatResult
     exhaust: [],
     limbo: [],
     relics: [...setup.relics],
+    potions: [...(setup.potions ?? [])],
+    counters: {},
     rng,
     nextUid: cards.length + 1,
-    stats: { turns: 0, cardsPlayed: 0, damageTaken: 0 },
+    stats: { turns: 0, cardsPlayed: 0, damageTaken: 0, damageDealt: 0, potionsUsed: 0 },
   };
 
   const r = newRunner(content, state);
@@ -342,6 +361,25 @@ export function dispatchCombat(content: Content, state: CombatState, command: Co
 
   if (command.type === 'endTurn') {
     r.queue.push({ kind: 'playerTurnEnd' });
+  } else if (command.type === 'discardPotion') {
+    const id = s.potions[command.slot];
+    if (!id) return reject('That slot is empty.');
+    s.potions[command.slot] = null;
+    r.events.push({ type: 'discardPotion', slot: command.slot, potion: id });
+    return { state: s, events: r.events };
+  } else if (command.type === 'usePotion') {
+    const id = s.potions[command.slot];
+    const def = id ? content.potions[id] : undefined;
+    if (!id || !def) return reject('That slot is empty.');
+    let target = command.target;
+    if (effectsUseTarget(def.effects)) {
+      const alive = livingEnemies(s);
+      if (target === undefined && alive.length === 1) target = alive[0]?.id;
+      if (!alive.some((e) => e.id === target)) return reject('Choose an enemy to target.');
+    } else {
+      target = undefined;
+    }
+    r.queue.push({ kind: 'usePotion', slot: command.slot, ...(target ? { target } : {}) });
   } else {
     const check = canPlayCard(content, s, command.uid);
     if (!check.ok) return reject(check.reason);

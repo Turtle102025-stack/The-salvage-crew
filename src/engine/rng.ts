@@ -12,7 +12,7 @@
 
 export type RngState = [number, number, number, number];
 
-export const RNG_STREAMS = ['map', 'rewards', 'shuffle', 'enemyAI', 'events', 'shop', 'potions', 'misc'] as const;
+export const RNG_STREAMS = ['map', 'rewards', 'shuffle', 'enemyAI', 'events', 'shop', 'potions', 'misc', 'encounters'] as const;
 export type RngStream = (typeof RNG_STREAMS)[number];
 
 /** Seed-code alphabet: no 0/O or 1/I so codes are easy to read aloud. */
