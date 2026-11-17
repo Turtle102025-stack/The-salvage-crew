@@ -9,7 +9,7 @@ in [CLAUDE.md](../CLAUDE.md).
 | # | Decision | Chosen |
 |---|----------|--------|
 | 1 | Repo visibility | Public (free GitHub Pages needs a public repo on the Free plan) |
-| 2 | Repo name / link | `the-salvage-crew` → https://turtle102025-stack.github.io/the-salvage-crew/ |
+| 2 | Repo name / link | `The-salvage-crew` (capital T, as created on GitHub) → https://turtle102025-stack.github.io/The-salvage-crew/ |
 | 3 | Starting character | Juno Kade, the Rigger (as pitched) |
 | 4 | Art style | A: industrial hazard (dark navy, amber + teal, chunky flat shapes, dark outlines) |
 | 5 | Writing tone | Wry, working-class crew humour |

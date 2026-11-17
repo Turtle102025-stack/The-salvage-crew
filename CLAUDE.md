@@ -17,7 +17,7 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
   4. commit and push to `main` (this is the agreed workflow; GitHub Actions
      tests, builds and deploys to Pages).
 - Record any new design decision in the decisions log in `docs/DESIGN.md`.
-- Live link: https://turtle102025-stack.github.io/the-salvage-crew/
+- Live link: https://turtle102025-stack.github.io/The-salvage-crew/
 
 ## Originality (non-negotiable)
 
@@ -101,8 +101,8 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
 
 ## Deployment
 
-- Public GitHub repo `turtle102025-stack/the-salvage-crew`.
+- Public GitHub repo `Turtle102025-stack/The-salvage-crew`.
 - `.github/workflows/deploy.yml`: on every push to `main`, type check, test
   and build, then deploy `dist/` to GitHub Pages. Pull requests are tested
   but not deployed.
-- Vite uses `base: './'` so the build works under the `/the-salvage-crew/` path.
+- Vite uses `base: './'` so the build works under the `/The-salvage-crew/` path.

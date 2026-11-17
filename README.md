@@ -5,7 +5,7 @@ the galaxy. Climb a branching map, fight turn-based card battles, and build
 your deck with new cards, Salvage and Canisters until you strike it rich or
 end up as part of the debris.
 
-**Play it:** https://turtle102025-stack.github.io/the-salvage-crew/
+**Play it:** https://turtle102025-stack.github.io/The-salvage-crew/
 
 Status: in development. The title screen shows which build phase is done.
 
