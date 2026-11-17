@@ -7,7 +7,7 @@
  * Numbers marked "tune" are first guesses for the Phase 7 simulator.
  */
 import { defineCards } from '../../../engine/defs';
-import { addCard, apply, attack, block, dealDamage, draw, energy, gain, remove, spend, stacks, when } from '../../../engine/effects/builders';
+import { apply, attack, block, dealDamage, draw, energy, gain, remove, spend, stacks, when } from '../../../engine/effects/builders';
 
 export const RIGGER_CARDS = defineCards('rigger', {
   // --- Starter deck -------------------------------------------------------------
@@ -309,7 +309,6 @@ export const RIGGER_CARDS = defineCards('rigger', {
     name: 'Scrap Plating',
     type: 'power',
     rarity: 'uncommon',
-    cost: 1,
     cost: 2,
     effects: [gain('scrap_plating', 1)],
     upgrade: { cost: 1 },
