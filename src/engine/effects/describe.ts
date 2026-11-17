@@ -164,6 +164,13 @@ export function describeEffect(content: Content, effect: Effect): string {
       const otherwise = effect.else ? ` Otherwise, ${lcFirst(describeEffects(content, effect.else))}` : '';
       return `Spend ${effect.amount} ${statusName(content, effect.status)}: ${then}${otherwise}`;
     }
+    case 'summon': {
+      const name = content.enemies[effect.enemy]?.name ?? effect.enemy;
+      const count = effect.count ?? 1;
+      return count === 1 ? `Summon a ${name}.` : `Summon ${count} ${name}s.`;
+    }
+    case 'upgradeHand':
+      return 'Upgrade all cards in your hand for the rest of this fight.';
     case 'repeat': {
       const t = describeAmount(content, effect.times);
       const inner = stripPeriod(describeEffects(content, effect.effects));

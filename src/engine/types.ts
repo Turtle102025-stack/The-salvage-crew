@@ -396,6 +396,8 @@ export type CombatEvent =
   | { type: 'enemyMove'; enemy: CreatureId; move: string; name: string }
   | { type: 'intent'; enemy: CreatureId; move: string }
   | { type: 'death'; target: CreatureId }
+  | { type: 'spawn'; creature: Creature }
+  | { type: 'cardUpgraded'; uid: number; card: string }
   | { type: 'victory' }
   | { type: 'defeat' };
 

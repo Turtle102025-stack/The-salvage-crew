@@ -256,6 +256,17 @@ describe('relics with run effects', () => {
   });
 });
 
+describe('edge cases', () => {
+  it('a fight that ends before the first turn is resolved straight away', () => {
+    let run = send(newRun('EDGE'), { type: 'proceed' });
+    run.hp = 3;
+    run.relics.push('overclocked_reactor'); // lose 4 HP at the start of each combat
+    run = send(run, { type: 'chooseNode', node: Object.values(run.map.nodes).find((n) => n.floor === 1)!.id });
+    expect(run.phase).toBe('lost');
+    expect(run.screen).toEqual({ type: 'gameOver', won: false });
+  });
+});
+
 describe('difficulty (Hazard levels)', () => {
   it('Hazard 4 starts with less max HP', () => {
     expect(newRun('HZ', 4).maxHp).toBe(66);
@@ -284,7 +295,7 @@ describe('acts', () => {
 
   it('beating the last boss wins the run', () => {
     let run = newRun();
-    run = { ...run, screen: { type: 'reward', node: 'boss', reward: { gold: null, cards: [], potion: null, relic: null, bossRelics: null } } };
+    run = { ...run, act: 3, screen: { type: 'reward', node: 'boss', reward: { gold: null, cards: [], potion: null, relic: null, bossRelics: null } } };
     run = send(run, { type: 'proceed' });
     expect(run.phase).toBe('won');
     expect(run.screen).toEqual({ type: 'gameOver', won: true });

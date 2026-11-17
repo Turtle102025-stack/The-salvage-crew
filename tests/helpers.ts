@@ -54,6 +54,7 @@ export const TEST_CARDS = defineCards('test', {
   t_poison: { name: 'Leak', type: 'skill', rarity: 'common', cost: 0, effects: [apply('poison', 3)], upgrade: { effects: [apply('poison', 5)] } },
   t_energy: { name: 'Battery', type: 'skill', rarity: 'common', cost: 0, effects: [energy(2)], upgrade: { effects: [energy(3)] } },
   t_power: { name: 'Test Power', type: 'power', rarity: 'common', cost: 0, effects: [gain('t_power_status', 2)], upgrade: { effects: [gain('t_power_status', 3)] } },
+  t_upgrade_hand: { name: 'Tune Up', type: 'skill', rarity: 'common', cost: 0, effects: [{ type: 'upgradeHand' }], upgrade: { cost: 0, text: 'Upgrade hand.' } },
   t_junk: { name: 'Junk', type: 'status', rarity: 'special', cost: 0, effects: [], keywords: ['unplayable'], upgrade: { name: 'Junk' } },
 });
 
@@ -75,6 +76,12 @@ export const TEST_ENEMIES = defineEnemies({
     hp: [40, 40],
     moves: { hex: { name: 'Hex', effects: [apply('vulnerable', 1), apply('weak', 1)] } },
     ai: { then: { cycle: ['hex'] } },
+  },
+  summoner: {
+    name: 'Summoner',
+    hp: [40, 40],
+    moves: { call: { name: 'Call', effects: [{ type: 'summon', enemy: 'dummy', count: 2, max: 3 }] } },
+    ai: { then: { cycle: ['call'] } },
   },
   opener: {
     name: 'Opener',

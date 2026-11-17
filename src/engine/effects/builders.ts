@@ -57,6 +57,11 @@ export const spend = (status: string, amount: number, then: Effect[], otherwise?
 
 export const repeat = (times: Amount, effects: Effect[]): Effect => ({ type: 'repeat', times, effects });
 
+/** Enemies only: call in another enemy, up to `max` living enemies (default 5). */
+export const summon = (enemy: string, count = 1, max = 5): Effect => ({ type: 'summon', enemy, count, max });
+
+export const upgradeHand = (): Effect => ({ type: 'upgradeHand' });
+
 export const when = (cond: Condition, then: Effect[], otherwise?: Effect[]): Effect => ({
   type: 'if',
   cond,

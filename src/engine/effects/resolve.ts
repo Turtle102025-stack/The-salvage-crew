@@ -20,6 +20,7 @@ import {
   opponentsOf,
   putCard,
   randomOpponent,
+  spawnEnemy,
   type Action,
   type Ctx,
   type Runner,
@@ -139,6 +140,23 @@ export function resolveEffect(r: Runner, effect: Effect, ctx: Ctx): void {
         enqueueEffects(r, effect.then, ctx);
       } else if (effect.else) {
         enqueueEffects(r, effect.else, ctx);
+      }
+      return;
+    }
+    case 'summon': {
+      const max = effect.max ?? 5;
+      for (let i = 0; i < (effect.count ?? 1); i++) {
+        if (r.state.enemies.filter((e) => !e.dead).length >= max) break;
+        spawnEnemy(r, effect.enemy);
+      }
+      return;
+    }
+    case 'upgradeHand': {
+      for (const card of r.state.hand) {
+        const def = r.content.cards[card.id];
+        if (card.upgraded || !def || def.type === 'curse' || def.type === 'status') continue;
+        card.upgraded = true;
+        r.events.push({ type: 'cardUpgraded', uid: card.uid, card: card.id });
       }
       return;
     }

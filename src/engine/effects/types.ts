@@ -52,6 +52,10 @@ export type Effect =
   /** Pay `amount` stacks of the actor's status (e.g. Scrap) to do `then`; otherwise `else`. */
   | { type: 'spend'; status: string; amount: number; then: Effect[]; else?: Effect[] }
   | { type: 'repeat'; times: Amount; effects: Effect[] }
+  /** Enemies: bring in another enemy (up to `max` living enemies in the fight). */
+  | { type: 'summon'; enemy: string; count?: number; max?: number }
+  /** Upgrade every card in your hand for the rest of this fight. */
+  | { type: 'upgradeHand' }
   | { type: 'if'; cond: Condition; then: Effect[]; else?: Effect[] };
 
 export type EffectType = Effect['type'];

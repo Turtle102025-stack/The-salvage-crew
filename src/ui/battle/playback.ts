@@ -36,6 +36,10 @@ export function eventDuration(e: CombatEvent): number {
       return e.to === 'exhaust' ? 180 : 25;
     case 'cardCreated':
       return 120;
+    case 'spawn':
+      return 420;
+    case 'cardUpgraded':
+      return 90;
     case 'victory':
     case 'defeat':
       return 600;

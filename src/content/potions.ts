@@ -68,4 +68,16 @@ export const POTIONS = definePotions({
     effects: [block(stacks('heat', { times: 3 })), remove('heat')],
     flavor: 'For when the torch gets ideas.',
   },
+  plating_gel: {
+    name: 'Plating Gel',
+    rarity: 'uncommon',
+    effects: [gain('plating', 4)],
+    flavor: 'Smear it on, let it set, feel invincible (not a warranty).',
+  },
+  emergency_battery: {
+    name: 'Emergency Battery',
+    rarity: 'rare',
+    effects: [energy(1), draw(2)],
+    flavor: 'For emergencies. Everything is an emergency.',
+  },
 });

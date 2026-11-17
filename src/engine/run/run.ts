@@ -252,6 +252,8 @@ function enterCombat(ctx: Ctx, node: NodeType, encounter: Encounter, fromEvent =
   ctx.combatFrom = null;
   ctx.combat = state;
   ctx.events.push({ type: 'combatStart', encounter: encounter.id });
+  // A fight can end before the first turn (e.g. losing HP at combat start).
+  if (state.phase !== 'player') finishCombat(ctx, state, node, encounter.id);
 }
 
 /** "2× Rust Lamprey, Scrap Mite" */

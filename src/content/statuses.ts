@@ -3,7 +3,7 @@
  * simulator (Phase 7) has run.
  */
 import { defineStatuses } from '../engine/defs';
-import { apply, block, dealDamage, draw, energy, gain, loseHp, remove, stacks, thisStacks } from '../engine/effects/builders';
+import { apply, block, dealDamage, draw, energy, gain, heal, loseHp, remove, stacks, thisStacks } from '../engine/effects/builders';
 
 export const OVERHEAT_AT = 10;
 export const OVERHEAT_HP_LOSS = 8; // tune
@@ -121,5 +121,73 @@ export const STATUSES = defineStatuses({
     kind: 'power',
     hooks: [{ on: 'cardPlayed', if: { cardType: 'attack' }, effects: [apply('magnetized', thisStacks(), 'randomEnemy'), block(2)] }],
     description: 'Whenever you play an Attack, apply {n} Magnetized to a random enemy and gain 2 Block.',
+  },
+
+  // --- Enemy traits (Acts 2–3) --------------------------------------------------------
+  barbed: {
+    name: 'Barbed',
+    kind: 'buff',
+    hooks: [{ on: 'attacked', effects: [dealDamage(thisStacks(), 'target')] }],
+    description: 'Whenever this is hit by an attack, the attacker takes {n} damage.',
+    summary: 'Hitting it with attacks hurts you back.',
+  },
+  nanites: {
+    name: 'Nanites',
+    kind: 'buff',
+    hooks: [{ on: 'turnEnd', effects: [heal(thisStacks())] }],
+    description: 'Heals {n} HP at the end of its turn.',
+    summary: 'Repairs itself a little every turn.',
+  },
+  plating: {
+    name: 'Plating',
+    kind: 'buff',
+    hooks: [{ on: 'turnStart', effects: [block(thisStacks())] }],
+    description: 'Gains {n} Block at the start of its turn.',
+    summary: 'Gains some Block at the start of each turn.',
+  },
+  agitated: {
+    name: 'Agitated',
+    kind: 'buff',
+    hooks: [{ on: 'cardPlayed', if: { cardType: 'skill' }, effects: [gain('strength', thisStacks())] }],
+    description: 'Whenever you play a Skill, gains {n} Strength.',
+    summary: 'Gets stronger every time you play a Skill.',
+  },
+
+  // --- More powers (Phase 8) -------------------------------------------------------------
+  heat_exchanger: {
+    name: 'Heat Exchanger',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [gain('heat', 2), block(thisStacks())] }],
+    description: 'At the start of your turn, gain 2 Heat and {n} Block.',
+  },
+  reactive_armor: {
+    name: 'Reactive Armor',
+    kind: 'power',
+    hooks: [{ on: 'attacked', effects: [block(thisStacks())] }],
+    description: 'Whenever you are hit by an attack, gain {n} Block.',
+  },
+  juggernaut: {
+    name: 'Juggernaut Rig',
+    kind: 'power',
+    hooks: [{ on: 'blockGained', effects: [dealDamage(thisStacks(), 'randomEnemy')] }],
+    description: 'Whenever you gain Block, deal {n} damage to a random enemy.',
+  },
+  scrapyard_king: {
+    name: 'Scrapyard King',
+    kind: 'power',
+    hooks: [{ on: 'turnEnd', effects: [dealDamage(stacks('scrap'), 'allEnemies')] }],
+    description: 'At the end of your turn, deal damage equal to your Scrap to ALL enemies.',
+  },
+  magnetar: {
+    name: 'Magnetar',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [apply('magnetized', thisStacks(), 'allEnemies')] }],
+    description: 'At the start of your turn, apply {n} Magnetized to ALL enemies.',
+  },
+  toolmaster: {
+    name: 'Toolmaster',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [draw(thisStacks())] }],
+    description: 'At the start of your turn, draw {n} more card{s}.',
   },
 });

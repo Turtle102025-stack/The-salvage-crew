@@ -70,6 +70,13 @@ log: `docs/DESIGN.md`. Read both before starting a phase.
   randomness uses the run's RNG streams, and wall-clock time (play time,
   history dates) lives only in the UI layer.
 
+## Where things live
+
+- Content: `src/content/` (characters/rigger/cards.ts, statuses.ts, relics.ts,
+  potions.ts, acts/act1–3, events/). Art for each id: `src/ui/art/specs.ts`
+  (a test fails if new content has no art).
+- Sound: `src/ui/audio/sfx.ts`. Saves/profile/history: `src/ui/save.ts`.
+
 ## Engine map
 
 See `docs/DESIGN.md` → "Engine map". Public API: `src/engine/index.ts`

@@ -56,6 +56,8 @@ export function effectsUseTarget(effects: readonly Effect[]): boolean {
       case 'draw':
       case 'gainEnergy':
       case 'addCard':
+      case 'summon':
+      case 'upgradeHand':
         return false;
       default:
         return e.target === 'target';

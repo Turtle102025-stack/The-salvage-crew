@@ -3,7 +3,7 @@
  * shop (only sold at the Trader) and boss (picked after a boss).
  */
 import { defineRelics } from '../engine/defs';
-import { apply, block, dealDamage, draw, energy, gain, loseHp, when } from '../engine/effects/builders';
+import { addCard, apply, block, dealDamage, draw, energy, gain, loseHp, when } from '../engine/effects/builders';
 
 export const RELICS = defineRelics({
   // --- Starter ------------------------------------------------------------------
@@ -194,5 +194,88 @@ export const RELICS = defineRelics({
     run: { maxEnergy: 1, cardChoices: -1 },
     description: 'Gain 1 Energy at the start of each turn. Card rewards offer 1 fewer choice.',
     flavor: 'Fully legal. Fully restrictive.',
+  },
+
+  // --- Phase 8 additions ---------------------------------------------------------
+  severance_pay: {
+    name: 'Severance Pay',
+    rarity: 'common',
+    character: 'neutral',
+    hooks: [],
+    run: { goldOnPickup: 100 },
+    description: 'Gain 100 Credits.',
+    flavor: 'From your last employer. They were very keen for you to leave.',
+  },
+  spare_oxygen: {
+    name: 'Spare Oxygen Tank',
+    rarity: 'common',
+    character: 'neutral',
+    hooks: [],
+    run: { maxHpOnPickup: 4, healOnPickup: 20 },
+    description: 'Gain 4 max HP and heal 20 HP.',
+    flavor: 'Breathe easy. Then breathe a bit more, just because you can.',
+  },
+  warm_gloves: {
+    name: 'Insulated Gloves',
+    rarity: 'common',
+    character: 'neutral',
+    hooks: [{ on: 'cardPlayed', if: { cardType: 'power' }, effects: [block(5)] }],
+    flavor: 'Rated for live wires, hot plates and handshakes with rivals.',
+  },
+  magnetic_lanyard: {
+    name: 'Magnetic Lanyard',
+    rarity: 'uncommon',
+    character: 'rigger',
+    hooks: [{ on: 'combatStart', effects: [apply('magnetized', 2, 'allEnemies')] }],
+    flavor: 'Keeps your keys close and your enemies closer.',
+  },
+  coolant_tank: {
+    name: 'Leaky Coolant Tank',
+    rarity: 'uncommon',
+    character: 'neutral',
+    hooks: [{ on: 'combatStart', effects: [apply('poison', 4, 'randomEnemy')] }],
+    flavor: 'It leaks on whoever is standing closest. Usually not you.',
+  },
+  overtime_clock: {
+    name: 'Overtime Clock',
+    rarity: 'uncommon',
+    character: 'neutral',
+    hooks: [{ on: 'turnStart', every: 4, effects: [energy(2)] }],
+    description: 'Every 4th turn of a fight, gain 2 Energy.',
+    flavor: 'Time and a half, after the fourth hour.',
+  },
+  ablative_plating: {
+    name: 'Ablative Plating',
+    rarity: 'rare',
+    character: 'neutral',
+    hooks: [{ on: 'combatStart', effects: [gain('plating', 3)] }],
+    description: 'At the start of each combat, gain 3 Plating (gain 3 Block at the start of each turn).',
+    flavor: 'Sacrificial armour. It sacrifices itself so you don’t have to.',
+  },
+  prototype_thruster: {
+    name: 'Prototype Thruster',
+    rarity: 'rare',
+    character: 'neutral',
+    hooks: [{ on: 'cardPlayed', every: 4, effects: [draw(1)] }],
+    description: 'Every 4th card you play in a fight draws you 1 card.',
+    flavor: 'Gets you where you’re going. Usually.',
+  },
+  loyalty_card: {
+    name: 'Trader Loyalty Card',
+    rarity: 'shop',
+    character: 'neutral',
+    hooks: [],
+    run: { goldAfterCombat: 8, shopDiscount: 0.1 },
+    description: 'After each fight, gain 8 Credits. Everything at the Trader costs 10% less.',
+    flavor: 'Nine more stamps for a free canister.',
+  },
+  experimental_reactor: {
+    name: 'Experimental Reactor',
+    rarity: 'boss',
+    character: 'neutral',
+    hooks: [{ on: 'combatStart', effects: [addCard('debris', 'draw', { count: 2 })] }],
+    run: { maxEnergy: 1 },
+    description: 'Gain 1 Energy at the start of each turn. At the start of each combat, shuffle 2 Debris into your draw pile.',
+    flavor: 'Burns hot, burns bright, burns through the floor occasionally.',
   },
 });

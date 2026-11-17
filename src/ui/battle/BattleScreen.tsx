@@ -18,6 +18,7 @@ import {
   type Content,
   type CreatureId,
 } from '../../engine';
+import { playSfx } from '../audio/sfx';
 import { EnemyArt } from '../art/EnemyArt';
 import { Glyph } from '../art/glyphs';
 import { PlayerArt } from '../art/PlayerArt';
@@ -129,7 +130,12 @@ export function BattleScreen(props: BattleScreenProps) {
 
   const showEventFx = useCallback(
     (e: CombatEvent, v: BattleView) => {
+      eventSound(e, content);
       switch (e.type) {
+        case 'spawn':
+          doPulse(e.creature.id, 'cast');
+          addFx(e.creature.id, 'Arrives!', 'info');
+          break;
         case 'damage':
           if (e.hpLost > 0) {
             addFx(e.target, `-${e.hpLost}`, 'dmg');
@@ -217,6 +223,7 @@ export function BattleScreen(props: BattleScreenProps) {
       const before = cloneView(v);
       applyEvent(v, event, cards);
       if (s !== 0) showEventFx(event, before);
+      if (s === 0 && (event.type === 'victory' || event.type === 'defeat')) eventSound(event, content);
       const d = s === 0 ? 0 : eventDuration(event) / s;
       if (d > 0) {
         wait = d;
@@ -227,7 +234,7 @@ export function BattleScreen(props: BattleScreenProps) {
     setView(v);
     if (wait > 0) timer.current = window.setTimeout(pump, wait);
     else pump();
-  }, [showEventFx]);
+  }, [showEventFx, content]);
 
   const flush = useCallback(() => {
     if (timer.current !== undefined) window.clearTimeout(timer.current);
@@ -675,6 +682,49 @@ export function BattleScreen(props: BattleScreenProps) {
       {props.overlay}
     </div>
   );
+}
+
+/** The sound for a battle event, if any. */
+function eventSound(e: CombatEvent, content: Content): void {
+  switch (e.type) {
+    case 'playCard':
+      return playSfx('card');
+    case 'usePotion':
+      return playSfx('potion');
+    case 'damage':
+      if (e.hpLost > 0) return playSfx(e.target === 'player' ? 'hurt' : 'hit');
+      if (e.blocked > 0) return playSfx('blocked');
+      return;
+    case 'hpLoss':
+      return playSfx(e.target === 'player' ? 'hurt' : 'hit');
+    case 'heal':
+      return playSfx('heal');
+    case 'block':
+      return playSfx('block');
+    case 'status':
+      if (e.delta > 0) return playSfx(content.statuses[e.status]?.kind === 'debuff' ? 'debuff' : 'buff');
+      return;
+    case 'death':
+      return e.target === 'player' ? undefined : playSfx('death');
+    case 'trigger':
+      if (e.source.kind === 'relic') return playSfx('relic');
+      if (e.source.kind === 'status' && content.statuses[e.source.id]?.threshold) return playSfx('overheat');
+      return;
+    case 'turnStart':
+      return e.who === 'player' ? playSfx('turn') : undefined;
+    case 'turnEnd':
+      return e.who === 'player' ? playSfx('enemyTurn') : undefined;
+    case 'shuffle':
+      return playSfx('shuffle');
+    case 'spawn':
+      return playSfx('spawn');
+    case 'victory':
+      return playSfx('victory');
+    case 'defeat':
+      return playSfx('defeat');
+    default:
+      return;
+  }
 }
 
 /** Engine helpers want a CombatState; build one that reflects what's on screen. */

@@ -62,6 +62,7 @@ function scanEffects(content: Content, enemy: Creature, player: Creature, effect
         out.kinds.add('block');
         break;
       case 'heal':
+      case 'summon':
         out.kinds.add('buff');
         break;
       case 'applyStatus': {

@@ -14,6 +14,7 @@ import {
   type RunEvent,
   type RunState,
 } from '../../engine';
+import { playSfx } from '../audio/sfx';
 import { BattleScreen, type EventBatch } from '../battle/BattleScreen';
 import { Glyph } from '../art/glyphs';
 import { Credits, Modal, PotionBar, RelicBar } from '../components/Bits';
@@ -128,7 +129,19 @@ export function RunView({ saved, onExit, onNewRun }: { saved: SavedRun; onExit: 
           done: false,
         }));
       }
-      // Toasts for out-of-combat pickups.
+      // Sounds and toasts for out-of-combat pickups.
+      if (command.type !== 'combat') {
+        for (const e of result.events) {
+          if (e.type === 'gold' && e.amount > 0) playSfx('coin');
+          else if (e.type === 'relic') playSfx('relic');
+          else if (e.type === 'potion' || e.type === 'potionUsed') playSfx('potion');
+          else if (e.type === 'cardAdded') playSfx('card');
+          else if (e.type === 'cardUpgraded') playSfx('buff');
+          else if (e.type === 'hp' && e.amount > 0) playSfx('heal');
+          else if (e.type === 'hp' && e.amount < 0) playSfx('hurt');
+        }
+      }
+      if (result.run.phase === 'won' && command.type !== 'combat') playSfx('victory');
       if (result.run.screen.type !== 'combat' && command.type !== 'combat') {
         for (const e of result.events) {
           const text = toastText(e);

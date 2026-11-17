@@ -119,3 +119,36 @@ describe('the Phase 3 test fight', () => {
     expect(state.enemies.map((e) => e.name)).toEqual(['Scrap Mite', 'Rust Lamprey', 'Scrap Mite']);
   });
 });
+
+describe('summoning and in-fight upgrades', () => {
+  it('summons new enemies up to the cap, each with an intent', () => {
+    const { state } = startFight({ enemies: ['summoner'] });
+    let r = endTurn(state);
+    expect(r.state.enemies.map((e) => e.defId)).toEqual(['summoner', 'dummy', 'dummy']);
+    expect(eventsOf(r.events, 'spawn')).toHaveLength(2);
+    expect(r.state.enemies[2]!.moveId).toBe('wait');
+    expect(getIntent(TEST_CONTENT, r.state, r.state.enemies[0]!)?.kinds).toEqual(['buff']);
+    r = endTurn(r.state); // already at the cap of 3 living enemies
+    expect(r.state.enemies).toHaveLength(3);
+  });
+
+  it('summoned enemies must also die before the fight is won', () => {
+    const { state } = startFight({ enemies: ['summoner'] });
+    let r = endTurn(state);
+    for (const e of r.state.enemies.slice(0, 1)) e.hp = 1;
+    setHand(r.state, ['t_strike']);
+    r = play(r.state, 't_strike', 'e0');
+    expect(r.state.phase).toBe('player');
+  });
+
+  it('upgrades every card in hand for the rest of the fight', () => {
+    const { state } = startFight();
+    setHand(state, ['t_upgrade_hand', 't_strike', 't_junk']);
+    const r = play(state, 't_upgrade_hand');
+    expect(r.state.hand.map((c) => [c.id, c.upgraded])).toEqual([
+      ['t_strike', true],
+      ['t_junk', false],
+    ]);
+    expect(eventsOf(r.events, 'cardUpgraded')).toHaveLength(1);
+  });
+});

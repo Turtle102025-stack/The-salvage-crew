@@ -69,6 +69,10 @@ export function formatEvent(content: Content, state: CombatState, event: CombatE
       return `${cap(who(event.enemy))} uses ${event.name}.`;
     case 'death':
       return event.target === 'player' ? 'Juno goes down.' : `${cap(who(event.target))} is destroyed.`;
+    case 'spawn':
+      return `${event.creature.name} joins the fight!`;
+    case 'cardUpgraded':
+      return `${cardName(event.card)} is upgraded.`;
     case 'victory':
       return 'Victory! Claim secured.';
     case 'defeat':

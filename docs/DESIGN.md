@@ -24,6 +24,9 @@ in [CLAUDE.md](../CLAUDE.md).
 | 14 | Enemy Block | Resets at the start of the enemy's own turn (so it protects them during yours) |
 | 15 | Act 1 boss | The Wreckwarden: escalating Strength (Lockdown), multi-hits, and it clogs your deck with Paperwork and Debris |
 | 16 | Status cards | Debris (Unplayable, Ethereal) and Paperwork (curse, Unplayable) are the junk cards enemies and events add |
+| 17 | Summons | Enemies can summon others mid-fight (`summon` effect, capped per move); summoned enemies must also be defeated |
+| 18 | Between acts | Heal 75% of missing HP (50% from Hazard 4) |
+| 19 | Fights ending at start | A fight that ends before the first turn (e.g. HP loss at combat start) is resolved immediately |
 
 ## World
 
@@ -221,6 +224,25 @@ queued, not emitted early), so the UI can animate the event list as-is.
   Hazards: Foreman Krell, Cutter Bot Mk II, Lamprey Matriarch.
   Boss: The Wreckwarden.
 - 9 Signals, 10 Canisters, 21 pieces of Salvage.
+
+## Acts 2–3, sound, history (Phase 8)
+
+- Act 2, The Hulk: 9 regular enemies, Hazards (Lockdown Sentinel, The
+  Gnawing Mass, Captain Vass) and the boss The Brood Matron. Act 3, The
+  Heart: 8 regular enemies, Hazards (The Chorus, Reactor Golem, The
+  Archivist) and the final boss The Meridian Heart. 10 new Signals.
+- New effects: `summon` (enemies call in others, capped) and `upgradeHand`.
+  New statuses: Barbed, Nanites, Plating, Agitated (enemy traits) and six
+  new Powers. Rigger: 75 cards. Salvage: 31. Canisters: 12.
+- Final balance (sim AI, Hazard 0, 2000 runs): win 19%; acts cleared
+  64% / 57% / 52%; bosses 17–26% death rate; Hazards ~11%; ~7 HP lost per
+  regular fight; est. ~44 min per full run. Hazard 3: 8%. Hazard 5: 2%.
+  Report: `docs/balance/full-game-hazard0.md`.
+- Sound: `src/ui/audio/sfx.ts` synthesises every effect with Web Audio
+  (no files), throttled, follows the Sound/Volume settings.
+- Run history screen (`src/ui/screens/HistoryScreen.tsx`): record, best
+  score, fastest win, every run with its seed and a "Replay seed" button.
+- Version 1.0.0.
 
 ## Balance simulator (Phase 7)
 

@@ -27,6 +27,7 @@ import type {
   Trigger,
 } from '../types';
 import { attacksIgnoreBlock, splitDamage } from './damage';
+import { chooseMove } from './enemies';
 
 export const MAX_HAND_SIZE = 10;
 
@@ -346,6 +347,31 @@ export function changeEnergy(r: Runner, delta: number): void {
   if (delta === 0) return;
   r.state.energy = Math.max(0, r.state.energy + delta);
   emit(r, { type: 'energy', energy: r.state.energy, delta });
+}
+
+/** Brings a new enemy into the fight (rightmost), with its first intent decided. */
+export function spawnEnemy(r: Runner, enemyId: string): Creature | undefined {
+  const def = r.content.enemies[enemyId];
+  if (!def) throw new Error(`Unknown enemy "${enemyId}"`);
+  const s = r.state;
+  const index = s.enemies.reduce((m, e) => Math.max(m, Number(e.id.slice(1))), -1) + 1;
+  const hp = nextInt(s.rng.misc, def.hp[0], def.hp[1]);
+  const creature: Creature = {
+    id: `e${index}`,
+    side: 'enemy',
+    defId: def.id,
+    name: def.name,
+    hp,
+    maxHp: hp,
+    block: 0,
+    statuses: { ...(def.startStatuses ?? {}) },
+    dead: false,
+    moveHistory: [],
+  };
+  creature.moveId = chooseMove(def, [], s.rng.enemyAI);
+  s.enemies.push(creature);
+  emit(r, { type: 'spawn', creature: JSON.parse(JSON.stringify(creature)) as Creature });
+  return creature;
 }
 
 /** Picks a random living opponent of `actor` (misc stream). */

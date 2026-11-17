@@ -195,6 +195,14 @@ export function applyEvent(view: BattleView, event: CombatEvent, cards: Map<numb
       if (c) c.acted = true;
       return;
     }
+    case 'spawn':
+      view.enemies.push(viewCreature(event.creature));
+      return;
+    case 'cardUpgraded': {
+      const card = view.hand.find((c) => c.uid === event.uid);
+      if (card) card.upgraded = true;
+      return;
+    }
     case 'victory':
       view.phase = 'victory';
       return;

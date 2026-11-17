@@ -177,3 +177,23 @@ describe('acts, encounters and events', () => {
     expect(act1.events.length).toBeGreaterThanOrEqual(8);
   });
 });
+
+import { CARD_ART, ENEMY_ART, POTION_ART, RELIC_ART } from '../src/ui/art/specs';
+
+describe('art coverage', () => {
+  it('every playable card, enemy, relic and potion has its own art', () => {
+    const missing = [
+      ...Object.keys(CONTENT.cards).filter((id) => !CARD_ART[id]).map((id) => `card ${id}`),
+      ...Object.keys(CONTENT.enemies).filter((id) => !ENEMY_ART[id]).map((id) => `enemy ${id}`),
+      ...Object.keys(CONTENT.relics).filter((id) => !RELIC_ART[id]).map((id) => `relic ${id}`),
+      ...Object.keys(CONTENT.potions).filter((id) => !POTION_ART[id]).map((id) => `potion ${id}`),
+    ];
+    expect(missing).toEqual([]);
+  });
+
+  it('meets the full-version content targets', () => {
+    expect(Object.values(CONTENT.cards).filter((c) => c.character === 'rigger').length).toBeGreaterThanOrEqual(75);
+    expect(Object.keys(CONTENT.relics).length).toBeGreaterThanOrEqual(30);
+    expect(CONTENT.acts).toHaveLength(3);
+  });
+});

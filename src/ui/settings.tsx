@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { setSfxSettings } from './audio/sfx';
 import { readJson, writeJson } from './storage';
 
 /** 0 = instant (no animation). */
@@ -29,6 +30,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(load);
   useEffect(() => {
     writeJson(KEY, settings);
+    setSfxSettings(settings.sound, settings.volume);
     document.documentElement.style.setProperty('--anim-speed', String(settings.animSpeed === 0 ? 100 : settings.animSpeed));
   }, [settings]);
   const api = useMemo<SettingsApi>(() => ({ settings, update: (patch) => setSettings((s) => ({ ...s, ...patch })) }), [settings]);
