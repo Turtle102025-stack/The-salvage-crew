@@ -16,6 +16,7 @@ export const STATUSES = defineStatuses({
     allowNegative: true,
     modifiers: { attackDealtPerStack: 1 },
     description: 'Attacks deal {n} more damage.',
+    summary: 'Attacks deal more damage per stack.',
   },
   weak: {
     name: 'Weak',
@@ -23,6 +24,7 @@ export const STATUSES = defineStatuses({
     decay: { when: 'turnEnd', amount: 1 },
     modifiers: { attackDealtMult: 0.75 },
     description: 'Deals 25% less attack damage. Lasts {n} more turn{s}.',
+    summary: 'Deals 25% less attack damage. Wears off one turn at a time.',
   },
   vulnerable: {
     name: 'Vulnerable',
@@ -30,6 +32,7 @@ export const STATUSES = defineStatuses({
     decay: { when: 'turnEnd', amount: 1 },
     modifiers: { attackTakenMult: 1.5 },
     description: 'Takes 50% more attack damage. Lasts {n} more turn{s}.',
+    summary: 'Takes 50% more attack damage. Wears off one turn at a time.',
   },
   poison: {
     name: 'Poison',
@@ -37,6 +40,7 @@ export const STATUSES = defineStatuses({
     decay: { when: 'turnStart', amount: 1 },
     hooks: [{ on: 'turnStart', effects: [loseHp(thisStacks(), 'self')] }],
     description: 'Toxic coolant. Loses {n} HP at the start of its turn, then Poison drops by 1.',
+    summary: 'Loses HP equal to its Poison at the start of each turn, then Poison drops by 1. Ignores Block.',
   },
 
   // --- Original: the Rigger's toolkit -----------------------------------------
@@ -44,12 +48,14 @@ export const STATUSES = defineStatuses({
     name: 'Scrap',
     kind: 'buff',
     description: 'Salvaged parts ({n}). Some cards spend Scrap for bonus effects. Resets after each fight.',
+    summary: 'Salvaged parts. Some cards spend Scrap for bonus effects. Resets after each fight.',
   },
   heat: {
     name: 'Heat',
     kind: 'buff',
     threshold: { at: OVERHEAT_AT, label: 'Overheat', effects: [loseHp(OVERHEAT_HP_LOSS, 'self'), remove('heat')] },
     description: `Torch heat ({n}). At ${OVERHEAT_AT} Heat you Overheat: lose ${OVERHEAT_HP_LOSS} HP and drop to 0 Heat.`,
+    summary: `Builds up as you use torch cards. At ${OVERHEAT_AT} Heat you Overheat: lose ${OVERHEAT_HP_LOSS} HP and drop to 0 Heat. Resets after each fight.`,
   },
   breach: {
     name: 'Breach',
@@ -57,12 +63,14 @@ export const STATUSES = defineStatuses({
     decay: { when: 'turnEnd', amount: 1 },
     modifiers: { attackIgnoresBlock: true },
     description: "Hull breached: attacks ignore this creature's Block. Lasts {n} more turn{s}.",
+    summary: "Attacks ignore this creature's Block. Wears off one turn at a time.",
   },
   magnetized: {
     name: 'Magnetized',
     kind: 'debuff',
     hooks: [{ on: 'attacked', effects: [apply('scrap', 1, 'target'), remove('magnetized', 1, 'self')] }],
     description: 'The next {n} attack hit{s} on this creature each give the attacker 1 Scrap.',
+    summary: 'Each attack hit on this creature gives the attacker 1 Scrap and uses up 1 stack.',
   },
 
   // --- Powers (installed by Power cards) --------------------------------------

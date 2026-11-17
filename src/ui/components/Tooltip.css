@@ -1,0 +1,45 @@
+.tt-anchor {
+  display: inline-flex;
+}
+.tt {
+  position: fixed;
+  z-index: 1000;
+  max-width: min(280px, calc(100vw - 16px));
+  background: var(--space-800);
+  color: var(--text);
+  border: 3px solid var(--space-950);
+  box-shadow: 0 0 0 2px var(--steel-500) inset, 4px 4px 0 var(--space-950);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  pointer-events: none;
+  animation: tt-in 0.12s ease-out;
+}
+.tt-wide {
+  max-width: min(360px, calc(100vw - 16px));
+}
+@keyframes tt-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+.tt-body + .tt-body {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--steel-600);
+}
+.tt-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 2px;
+}
+.tt-text {
+  color: var(--text);
+  white-space: pre-line;
+}
+.tt-text em {
+  color: var(--text-dim);
+}

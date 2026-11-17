@@ -189,6 +189,25 @@ enemy({ id: 'scrap_mite', name: 'Scrap Mite', hp: [11, 15],
 Events are emitted in resolution order (hook "trigger" announcements are
 queued, not emitted early), so the UI can animate the event list as-is.
 
+## Battle screen (Phase 4)
+
+- `src/ui/battle/view.ts`: the on-screen view model. The UI replays each
+  command's events onto it one at a time (`applyEvent`), then snaps to the
+  engine's final state. `tests/view.test.ts` proves replay == final state.
+- `src/ui/battle/BattleScreen.tsx`: playback (timings in `playback.ts`,
+  divided by the animation-speed setting; Space/tap skips), floating numbers,
+  hit/lunge/glow reactions, turn banners, drag-or-click to play, keyboard
+  (1–0 select, ←/→ target, Enter play, Esc cancel, E end turn), pile viewers,
+  combat log drawer.
+- Art: `src/ui/art/glyphs.tsx` (shared icon library), `EnemyArt.tsx`
+  (enemies drawn from body plans + palette + features), `PlayerArt.tsx`,
+  `StageBackdrop.tsx`; which art each id uses lives in `src/ui/art/specs.ts`.
+  Open the site with `#gallery` to see every piece of art.
+- Tooltips (`src/ui/components/Tooltip.tsx`): hover, focus, or long-press on
+  touch screens.
+- Settings (`src/ui/settings.tsx`): animation speed, sound, volume; saved in
+  localStorage via `src/ui/storage.ts` (all access wrapped in try/catch).
+
 ## Folder structure
 
 ```

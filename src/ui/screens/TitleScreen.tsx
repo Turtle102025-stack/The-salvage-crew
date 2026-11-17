@@ -7,7 +7,7 @@ const WORK_ORDER: { label: string; done: boolean }[] = [
   { label: 'Phase 1: Plan approved', done: true },
   { label: 'Phase 2: Dry dock (project setup)', done: true },
   { label: 'Phase 3: Test fight (combat engine)', done: true },
-  { label: 'Phase 4: Battle screen & animations', done: false },
+  { label: 'Phase 4: Battle screen & animations', done: true },
   { label: 'Phase 5: The run: map, rewards, shop, events', done: false },
   { label: 'Phase 6: Act 1 content, through the boss', done: false },
   { label: 'Phase 7: Balance simulator', done: false },

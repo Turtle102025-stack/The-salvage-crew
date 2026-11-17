@@ -1,0 +1,140 @@
+/* A playing card. Everything scales from --cw (card width). */
+.card {
+  --cw: 160px;
+  --type: var(--steel-400);
+  position: relative;
+  width: var(--cw);
+  aspect-ratio: 5 / 7;
+  flex: none;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: calc(var(--cw) * 0.074);
+  line-height: 1.25;
+  color: var(--text);
+}
+.card-attack { --type: var(--card-attack); }
+.card-skill { --type: var(--card-skill); }
+.card-power { --type: var(--card-power); }
+.card-curse { --type: #8c3b5a; }
+
+.card-frame {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  background: linear-gradient(180deg, var(--space-700), var(--space-800));
+  border: calc(var(--cw) * 0.022) solid var(--space-950);
+  border-radius: calc(var(--cw) * 0.07);
+  box-shadow:
+    0 0 0 calc(var(--cw) * 0.018) var(--type) inset,
+    calc(var(--cw) * 0.025) calc(var(--cw) * 0.025) 0 var(--space-950);
+  overflow: hidden;
+  padding: calc(var(--cw) * 0.035);
+  gap: calc(var(--cw) * 0.025);
+}
+.card-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.12em;
+  text-align: center;
+  line-height: 1.05;
+  padding: 0.25em 0.2em 0.2em 1.6em;
+  min-height: 1.6em;
+  display: grid;
+  place-items: center;
+  background: var(--space-950);
+  border-radius: calc(var(--cw) * 0.035);
+  color: var(--text);
+}
+.card.upgraded .card-name {
+  color: var(--heal);
+}
+.card-art-wrap {
+  border: calc(var(--cw) * 0.016) solid var(--space-950);
+  border-radius: calc(var(--cw) * 0.035);
+  overflow: hidden;
+  line-height: 0;
+}
+.card-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 100 / 58;
+}
+.card-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  font-family: var(--font-display);
+  font-size: 0.72em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--space-950);
+  background: var(--type);
+  border-radius: 99px;
+  padding: 0.12em 0.6em;
+  justify-self: center;
+  font-weight: 700;
+}
+.card-gem {
+  width: 0.75em;
+  height: 0.75em;
+  transform: rotate(45deg);
+  border: 0.14em solid var(--space-950);
+  background: var(--rarity-common);
+}
+.gem-starter { background: var(--steel-400); }
+.gem-uncommon { background: var(--rarity-uncommon); }
+.gem-rare { background: var(--rarity-rare); box-shadow: 0 0 0.4em var(--rarity-rare); }
+.gem-special { background: var(--steel-500); }
+.card-text {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 0.98em;
+  padding: 0 0.2em 0.2em;
+  overflow: hidden;
+}
+.card-text b {
+  color: var(--amber);
+  font-weight: 700;
+}
+.card-cost {
+  position: absolute;
+  left: calc(var(--cw) * -0.06);
+  top: calc(var(--cw) * -0.06);
+  width: calc(var(--cw) * 0.24);
+  height: calc(var(--cw) * 0.24);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffd27a, var(--amber) 55%, var(--amber-deep));
+  border: calc(var(--cw) * 0.022) solid var(--space-950);
+  color: var(--space-950);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5em;
+  box-shadow: calc(var(--cw) * 0.015) calc(var(--cw) * 0.015) 0 var(--space-950);
+}
+.card-cost.cheaper {
+  background: radial-gradient(circle at 35% 30%, #b8f5cf, var(--heal) 60%, #2f9a5c);
+}
+.card.unaffordable .card-cost {
+  background: radial-gradient(circle at 35% 30%, #c4cbe0, var(--steel-400));
+}
+.card-hotkey {
+  position: absolute;
+  right: calc(var(--cw) * 0.04);
+  top: calc(var(--cw) * -0.09);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  color: var(--text-dim);
+  background: var(--space-900);
+  border: 2px solid var(--steel-600);
+  border-radius: 4px;
+  padding: 0 0.35em;
+  line-height: 1.4;
+}
+.card.dim {
+  filter: saturate(0.4) brightness(0.75);
+}

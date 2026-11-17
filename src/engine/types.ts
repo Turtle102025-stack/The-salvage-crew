@@ -81,6 +81,8 @@ export interface StatusDef {
   name: string;
   /** Tooltip text. `{n}` = stacks, `{s}` = "s" unless stacks is 1. */
   description: string;
+  /** One-line general explanation (no numbers), for card keyword tooltips. */
+  summary?: string;
   /** buff/debuff for normal statuses; power = installed by a Power card. */
   kind: 'buff' | 'debuff' | 'power';
   /** Stacks drop by `amount` (or to 0) at the owner's turn start/end, after hooks. */
