@@ -12,4 +12,14 @@ export const NEUTRAL_CARDS = defineCards('neutral', {
     upgrade: { name: 'Paperwork' },
     flavor: 'Form 27-B, in triplicate. It is always in your way.',
   },
+  debris: {
+    name: 'Debris',
+    type: 'status',
+    rarity: 'special',
+    cost: 0,
+    effects: [],
+    keywords: ['unplayable', 'ethereal'],
+    upgrade: { name: 'Debris' },
+    flavor: 'Someone dumped this on you. Literally.',
+  },
 });

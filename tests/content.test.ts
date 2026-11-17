@@ -120,3 +120,60 @@ describe('characters', () => {
     }
   });
 });
+
+describe('acts, encounters and events', () => {
+  it('every act has fights, Hazards, a boss and events that exist', () => {
+    for (const act of CONTENT.acts) {
+      expect(act.encounters.normal.length).toBeGreaterThan(0);
+      expect(act.encounters.elite.length).toBeGreaterThan(0);
+      expect(act.encounters.boss.length).toBeGreaterThan(0);
+      for (const pool of Object.values(act.encounters)) {
+        for (const enc of pool) for (const id of enc.enemies) expect(CONTENT.enemies[id], `${enc.id}: ${id}`).toBeDefined();
+      }
+      const ids = Object.values(act.encounters).flat().map((e) => e.id);
+      expect(new Set(ids).size).toBe(ids.length);
+      for (const id of act.events) expect(CONTENT.events[id], id).toBeDefined();
+    }
+  });
+
+  it('events have a start scene, valid links and real rewards', () => {
+    for (const ev of Object.values(CONTENT.events)) {
+      expect(ev.scenes.start, `${ev.id} start`).toBeDefined();
+      for (const scene of Object.values(ev.scenes)) {
+        expect(scene.choices.length).toBeGreaterThan(0);
+        for (const c of scene.choices) {
+          if (c.next) expect(ev.scenes[c.next], `${ev.id} -> ${c.next}`).toBeDefined();
+          const check = (effects: typeof c.effects): void => {
+            for (const e of effects) {
+              if (e.type === 'addCard') expect(CONTENT.cards[e.card], e.card).toBeDefined();
+              if (e.type === 'relic' && e.relic) expect(CONTENT.relics[e.relic], e.relic).toBeDefined();
+              if (e.type === 'potion' && e.potion) expect(CONTENT.potions[e.potion], e.potion).toBeDefined();
+              if (e.type === 'fight') for (const id of e.enemies) expect(CONTENT.enemies[id], id).toBeDefined();
+              if (e.type === 'chance') {
+                check(e.then);
+                check(e.else ?? []);
+              }
+            }
+          };
+          check(c.effects);
+        }
+      }
+    }
+  });
+
+  it('potions only refer to things that exist', () => {
+    for (const p of Object.values(CONTENT.potions)) expect(checkRefs(p.effects, p.id)).toEqual([]);
+  });
+
+  it('meets the Act 1 content targets', () => {
+    const rigger = Object.values(CONTENT.cards).filter((c) => c.character === 'rigger');
+    expect(rigger.length).toBeGreaterThanOrEqual(35);
+    expect(Object.keys(CONTENT.relics).length).toBeGreaterThanOrEqual(12);
+    expect(Object.keys(CONTENT.potions).length).toBeGreaterThanOrEqual(6);
+    const act1 = CONTENT.acts[0]!;
+    const regular = new Set([...act1.encounters.weak, ...act1.encounters.normal].flatMap((e) => e.enemies));
+    expect(regular.size).toBeGreaterThanOrEqual(8);
+    expect(act1.encounters.elite.length).toBeGreaterThanOrEqual(3);
+    expect(act1.events.length).toBeGreaterThanOrEqual(8);
+  });
+});

@@ -22,6 +22,8 @@ in [CLAUDE.md](../CLAUDE.md).
 | 12 | Power cards | Leave play when played (not discarded or exhausted) and install a `power` status |
 | 13 | Debuff timing | Weak / Vulnerable / Breach drop by 1 at the end of their owner's turn; Poison ticks at the start of its owner's turn, then drops by 1 |
 | 14 | Enemy Block | Resets at the start of the enemy's own turn (so it protects them during yours) |
+| 15 | Act 1 boss | The Wreckwarden: escalating Strength (Lockdown), multi-hits, and it clogs your deck with Paperwork and Debris |
+| 16 | Status cards | Debris (Unplayable, Ethereal) and Paperwork (curse, Unplayable) are the junk cards enemies and events add |
 
 ## World
 
@@ -207,6 +209,18 @@ queued, not emitted early), so the UI can animate the event list as-is.
   touch screens.
 - Settings (`src/ui/settings.tsx`): animation speed, sound, volume; saved in
   localStorage via `src/ui/storage.ts` (all access wrapped in try/catch).
+
+## Act 1 content (Phase 6)
+
+- Rigger: 40 cards (3 starter, 16 common, 16 uncommon, 7 rare… see
+  `src/content/characters/rigger/cards.ts`). New Powers: Shield Drone,
+  Coolant Drone, Recycler, Scrap Plating, Thermal Feedback, Double Shift,
+  Magnetic Field.
+- Act 1 enemies: Scrap Mite, Rust Lamprey, Salvage Drone, Claim Jumper,
+  Coolant Slick, Defense Turret, Scrap Crab, Sentry Orb, Mite Swarm.
+  Hazards: Foreman Krell, Cutter Bot Mk II, Lamprey Matriarch.
+  Boss: The Wreckwarden.
+- 9 Signals, 10 Canisters, 21 pieces of Salvage.
 
 ## Run loop (Phase 5)
 

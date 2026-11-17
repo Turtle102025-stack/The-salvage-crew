@@ -3,7 +3,7 @@
  * simulator (Phase 7) has run.
  */
 import { defineStatuses } from '../engine/defs';
-import { apply, dealDamage, loseHp, remove, thisStacks } from '../engine/effects/builders';
+import { apply, block, dealDamage, energy, gain, loseHp, remove, stacks, thisStacks } from '../engine/effects/builders';
 
 export const OVERHEAT_AT = 10;
 export const OVERHEAT_HP_LOSS = 8; // tune
@@ -79,5 +79,47 @@ export const STATUSES = defineStatuses({
     kind: 'power',
     hooks: [{ on: 'turnEnd', effects: [dealDamage(thisStacks(), 'randomEnemy')] }],
     description: 'At the end of your turn, deal {n} damage to a random enemy.',
+  },
+  shield_drone: {
+    name: 'Shield Drone',
+    kind: 'power',
+    hooks: [{ on: 'turnEnd', effects: [block(thisStacks())] }],
+    description: 'At the end of your turn, gain {n} Block.',
+  },
+  coolant_drone: {
+    name: 'Coolant Drone',
+    kind: 'power',
+    hooks: [{ on: 'turnEnd', effects: [apply('poison', thisStacks(), 'randomEnemy')] }],
+    description: 'At the end of your turn, apply {n} Poison to a random enemy.',
+  },
+  recycler: {
+    name: 'Recycler',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [gain('scrap', thisStacks())] }],
+    description: 'At the start of your turn, gain {n} Scrap.',
+  },
+  scrap_plating: {
+    name: 'Scrap Plating',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [block(stacks('scrap'))] }],
+    description: 'At the start of your turn, gain Block equal to your Scrap.',
+  },
+  thermal_feedback: {
+    name: 'Thermal Feedback',
+    kind: 'power',
+    hooks: [{ on: 'turnEnd', effects: [dealDamage(stacks('heat'), 'allEnemies')] }],
+    description: 'At the end of your turn, deal damage equal to your Heat to ALL enemies.',
+  },
+  double_shift: {
+    name: 'Double Shift',
+    kind: 'power',
+    hooks: [{ on: 'turnStart', effects: [energy(thisStacks()), loseHp(2)] }],
+    description: 'At the start of your turn, gain {n} Energy and lose 2 HP.',
+  },
+  magnetic_field: {
+    name: 'Magnetic Field',
+    kind: 'power',
+    hooks: [{ on: 'cardPlayed', if: { cardType: 'attack' }, effects: [apply('magnetized', thisStacks(), 'randomEnemy')] }],
+    description: 'Whenever you play an Attack, apply {n} Magnetized to a random enemy.',
   },
 });

@@ -77,6 +77,11 @@ function describeCondition(content: Content, cond: Condition): string {
   return cond.on === 'target' ? `the target has ${amount}${name}` : `you have ${amount}${name}`;
 }
 
+/** Bonus clauses read better with "more": "Spend 2 Scrap: gain 6 more Block." */
+function bonus(text: string): string {
+  return text.replace(/^gain (\d+) Block/, 'gain $1 more Block').replace(/^deal (\d+) damage/, 'deal $1 more damage');
+}
+
 /** "Deal 6 damage." / "Deal damage equal to twice your Heat." */
 function describeDamage(content: Content, amount: Amount, target: TargetSel, hits?: Amount): string {
   const a = describeAmount(content, amount);
@@ -84,7 +89,8 @@ function describeDamage(content: Content, amount: Amount, target: TargetSel, hit
   let hitText = '';
   if (hits !== undefined) {
     const h = describeAmount(content, hits);
-    if (h.kind === 'number' && h.text !== '1') hitText = ` ${h.text} times`;
+    if (h.kind === 'number' && h.text === '2') hitText = ' twice';
+    else if (h.kind === 'number' && h.text !== '1') hitText = ` ${h.text} times`;
     else if (h.kind === 'phrase') hitText = `, repeated ${h.text} times`;
   }
   if (a.kind === 'number') return `Deal ${a.text} damage${where}${hitText}.`;
@@ -154,7 +160,7 @@ export function describeEffect(content: Content, effect: Effect): string {
       return `Add ${count === 1 ? 'a' : count} ${name}${count === 1 ? '' : ' cards'} to ${pileName(effect.to)}.`;
     }
     case 'spend': {
-      const then = lcFirst(describeEffects(content, effect.then));
+      const then = bonus(lcFirst(describeEffects(content, effect.then)));
       const otherwise = effect.else ? ` Otherwise, ${lcFirst(describeEffects(content, effect.else))}` : '';
       return `Spend ${effect.amount} ${statusName(content, effect.status)}: ${then}${otherwise}`;
     }
@@ -164,7 +170,7 @@ export function describeEffect(content: Content, effect: Effect): string {
       return t.kind === 'number' ? `${inner} ${t.text} times.` : `${inner}, repeated ${t.text} times.`;
     }
     case 'if': {
-      const then = lcFirst(describeEffects(content, effect.then));
+      const then = bonus(lcFirst(describeEffects(content, effect.then)));
       const otherwise = effect.else ? ` Otherwise, ${lcFirst(describeEffects(content, effect.else))}` : '';
       return `If ${describeCondition(content, effect.cond)}, ${then}${otherwise}`;
     }
