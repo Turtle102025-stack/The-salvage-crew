@@ -87,7 +87,7 @@ describe('card text', () => {
     expect(text('pry_bar')).toBe('Deal 6 damage.');
     expect(text('pry_bar', true)).toBe('Deal 9 damage.');
     expect(text('strip_for_parts')).toBe('Deal 5 damage. Gain 2 Scrap.');
-    expect(text('jury_rig')).toBe('Gain 6 Block. Spend 2 Scrap: gain 6 more Block.');
+    expect(text('jury_rig')).toBe('Gain 6 Block. Spend 2 Scrap: gain 5 more Block.');
     expect(text('thermal_lance')).toBe('Gain 3 Heat. Deal damage equal to twice your Heat.');
     expect(text('thermal_lance', true)).toBe('Gain 3 Heat. Deal damage equal to 3× your Heat.');
     expect(text('cutter_drone')).toBe('At the end of your turn, deal 3 damage to a random enemy.');

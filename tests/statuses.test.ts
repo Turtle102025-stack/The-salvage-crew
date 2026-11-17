@@ -101,7 +101,7 @@ describe('Heat and Overheat (Thermal Lance)', () => {
     state.player.statuses.heat = 6;
     setHand(state, ['vent_coolant']);
     const r = play(state, 'vent_coolant');
-    expect(r.state.player.block).toBe(12);
+    expect(r.state.player.block).toBe(18);
     expect(r.state.player.statuses.heat).toBeUndefined();
   });
 });
@@ -112,9 +112,9 @@ describe('Magnetized and Scrap', () => {
     setHand(state, ['mag_clamp', 't_multi']);
     let r = play(state, 'mag_clamp', 'e0');
     expect(r.state.player.statuses.scrap).toBeUndefined(); // its own hit lands before the clamp
-    expect(r.state.enemies[0]!.statuses.magnetized).toBe(2);
-    r = play(r.state, 't_multi', 'e0'); // 3 hits, only 2 stacks
-    expect(r.state.player.statuses.scrap).toBe(2);
+    expect(r.state.enemies[0]!.statuses.magnetized).toBe(3);
+    r = play(r.state, 't_multi', 'e0'); // 3 hits use up all 3 stacks
+    expect(r.state.player.statuses.scrap).toBe(3);
     expect(r.state.enemies[0]!.statuses.magnetized).toBeUndefined();
   });
 
@@ -123,10 +123,10 @@ describe('Magnetized and Scrap', () => {
     state.player.statuses.scrap = 3;
     setHand(state, ['jury_rig', 'jury_rig']);
     let r = play(state, 'jury_rig');
-    expect(r.state.player.block).toBe(12);
+    expect(r.state.player.block).toBe(11);
     expect(r.state.player.statuses.scrap).toBe(1);
     r = play(r.state, 'jury_rig'); // only 1 Scrap left: no bonus
-    expect(r.state.player.block).toBe(18);
+    expect(r.state.player.block).toBe(17);
     expect(r.state.player.statuses.scrap).toBe(1);
   });
 });

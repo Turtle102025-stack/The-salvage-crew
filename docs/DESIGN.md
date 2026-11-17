@@ -222,6 +222,27 @@ queued, not emitted early), so the UI can animate the event list as-is.
   Boss: The Wreckwarden.
 - 9 Signals, 10 Canisters, 21 pieces of Salvage.
 
+## Balance simulator (Phase 7)
+
+- `npm run sim -- --runs 2000 [--hazard 0] [--prefix SEED] [--explore 0.2]`
+  plays runs headlessly and writes `sim-reports/report-h<hazard>-<runs>.md`
+  (+ `.json`). Latest saved report: `docs/balance/`.
+- AI (`sim/ai.ts`): combat is a one-step lookahead (each card/target/potion
+  is played on a copy of the fight and the result is scored: HP, unblocked
+  incoming damage, enemy HP, kills, statuses, powers). Card picks use an
+  estimated power-per-Energy (`cardPower`) plus deck-style synergy; 20% of
+  decisions are random so every card gets sampled.
+- Report: win rate, clear rate per act, damage per fight (by fight type and
+  encounter), card pick rate and win rate vs runs that skipped the card
+  (controls for survivorship), relic win rate vs runs that got as far,
+  top killers, and automatic flags.
+- Phase 7 tuning (Act 1, Hazard 0, AI): Act 1 clear 30% → 66%; boss death
+  rate 57% → ~24%; Hazards 42%/20% → ~10%; ~9 HP lost per fight. Card
+  changes are recorded in git history ("Phase 7" commit).
+- Caveat: flags reflect this AI's play. "Rarely chosen" usually means the AI
+  undervalues a card; power cards that need planning (Double Shift, Mother
+  Lode) look worse for the AI than they are for people.
+
 ## Run loop (Phase 5)
 
 - `src/engine/run/run.ts`: `createRun` / `dispatchRun(content, run, command)`.

@@ -89,6 +89,13 @@ helpers and test-only content in `tests/helpers.ts`.
 - Characters are folders: `src/content/characters/<id>/` (cards, starter
   deck, starter relic). Nothing in the engine may assume there is only one.
 
+## Balance
+
+- After changing numbers on cards, relics, enemies or rewards, run
+  `npm run sim -- --runs 2000` and check the act clear rates, encounter death
+  rates and flags. Targets at Hazard 0 for the sim AI: each act cleared
+  ~60–70% of the time, Hazards kill ≤ ~12%, bosses ~20–30%.
+
 ## Testing
 
 - Vitest. Engine changes come with tests: damage math, status interactions,
@@ -107,7 +114,7 @@ helpers and test-only content in `tests/helpers.ts`.
 | `npm run typecheck` | type check app + engine (engine without DOM types) |
 | `npm run build` | production build into `dist/` |
 | `npm run check` | typecheck + tests + build (run before committing) |
-| `npm run sim` | balance simulator (from Phase 7) |
+| `npm run sim -- --runs 2000` | balance simulator; report in `sim-reports/` (see DESIGN.md) |
 
 ## Deployment
 

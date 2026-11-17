@@ -117,10 +117,10 @@ export const ACT1_ENEMIES = defineEnemies({
   },
   cutter_bot: {
     name: 'Cutter Bot Mk II',
-    hp: [64, 70],
+    hp: [58, 62],
     moves: {
       grind: { name: 'Grind', effects: [attack(5, { hits: 3 })] },
-      overclock: { name: 'Overclock', effects: [gain('strength', 3)] },
+      overclock: { name: 'Overclock', effects: [gain('strength', 2)] },
       brace: { name: 'Brace Frame', effects: [block(15)] },
     },
     ai: { then: { cycle: ['grind', 'overclock', 'grind', 'brace'] } },
@@ -128,11 +128,11 @@ export const ACT1_ENEMIES = defineEnemies({
   },
   lamprey_matriarch: {
     name: 'Lamprey Matriarch',
-    hp: [80, 86],
+    hp: [68, 72],
     moves: {
-      bite: { name: 'Corrosive Bite', effects: [attack(10), apply('poison', 2)] },
-      cloud: { name: 'Spawn Cloud', effects: [apply('poison', 4), apply('weak', 1)] },
-      coil: { name: 'Coil', effects: [block(12), gain('strength', 2)] },
+      bite: { name: 'Corrosive Bite', effects: [attack(9), apply('poison', 2)] },
+      cloud: { name: 'Spawn Cloud', effects: [apply('poison', 3), apply('weak', 1)] },
+      coil: { name: 'Coil', effects: [block(10), gain('strength', 1)] },
     },
     ai: { opening: ['cloud'], then: { weights: { bite: 50, coil: 25, cloud: 25 }, maxInARow: 2 } },
     flavor: 'Every lamprey in the belt came from somewhere. This is the somewhere.',
@@ -141,12 +141,12 @@ export const ACT1_ENEMIES = defineEnemies({
   // --- Boss ------------------------------------------------------------------------------
   wreckwarden: {
     name: 'The Wreckwarden',
-    hp: [200, 208],
+    hp: [172, 178],
     moves: {
       citation: { name: 'Issue Citations', effects: [addCard('paperwork', 'draw', { count: 2 }), apply('weak', 1)], intent: ['debuff'] },
-      clamp: { name: 'Hydraulic Clamp', effects: [attack(16)] },
-      compactor: { name: 'Compactor', effects: [attack(6, { hits: 3 })] },
-      lockdown: { name: 'Lockdown', effects: [block(16), gain('strength', 3)] },
+      clamp: { name: 'Hydraulic Clamp', effects: [attack(14)] },
+      compactor: { name: 'Compactor', effects: [attack(5, { hits: 3 })] },
+      lockdown: { name: 'Lockdown', effects: [block(14), gain('strength', 2)] },
       dump: { name: 'Dump Debris', effects: [attack(8), addCard('debris', 'discard', { count: 2 })] },
     },
     ai: { opening: ['citation'], then: { cycle: ['clamp', 'compactor', 'lockdown', 'dump', 'clamp', 'citation'] } },

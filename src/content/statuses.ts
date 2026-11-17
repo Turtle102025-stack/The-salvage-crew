@@ -3,7 +3,7 @@
  * simulator (Phase 7) has run.
  */
 import { defineStatuses } from '../engine/defs';
-import { apply, block, dealDamage, energy, gain, loseHp, remove, stacks, thisStacks } from '../engine/effects/builders';
+import { apply, block, dealDamage, draw, energy, gain, loseHp, remove, stacks, thisStacks } from '../engine/effects/builders';
 
 export const OVERHEAT_AT = 10;
 export const OVERHEAT_HP_LOSS = 8; // tune
@@ -107,19 +107,19 @@ export const STATUSES = defineStatuses({
   thermal_feedback: {
     name: 'Thermal Feedback',
     kind: 'power',
-    hooks: [{ on: 'turnEnd', effects: [dealDamage(stacks('heat'), 'allEnemies')] }],
-    description: 'At the end of your turn, deal damage equal to your Heat to ALL enemies.',
+    hooks: [{ on: 'turnEnd', effects: [dealDamage(stacks('heat'), 'allEnemies'), gain('heat', 2)] }],
+    description: 'At the end of your turn, deal damage equal to your Heat to ALL enemies, then gain 2 Heat.',
   },
   double_shift: {
     name: 'Double Shift',
     kind: 'power',
-    hooks: [{ on: 'turnStart', effects: [energy(thisStacks()), loseHp(2)] }],
-    description: 'At the start of your turn, gain {n} Energy and lose 2 HP.',
+    hooks: [{ on: 'turnStart', effects: [energy(thisStacks()), draw(1), loseHp(1)] }],
+    description: 'At the start of your turn, gain {n} Energy, draw 1 card and lose 1 HP.',
   },
   magnetic_field: {
     name: 'Magnetic Field',
     kind: 'power',
-    hooks: [{ on: 'cardPlayed', if: { cardType: 'attack' }, effects: [apply('magnetized', thisStacks(), 'randomEnemy')] }],
-    description: 'Whenever you play an Attack, apply {n} Magnetized to a random enemy.',
+    hooks: [{ on: 'cardPlayed', if: { cardType: 'attack' }, effects: [apply('magnetized', thisStacks(), 'randomEnemy'), block(2)] }],
+    description: 'Whenever you play an Attack, apply {n} Magnetized to a random enemy and gain 2 Block.',
   },
 });

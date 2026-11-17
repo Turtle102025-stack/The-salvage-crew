@@ -1,7 +1,7 @@
 {
   "name": "the-salvage-crew",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A roguelike deckbuilder about a space salvage crew.",
   "type": "module",
   "engines": {
@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.engine.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test && npm run build",
+    "sim": "tsx sim/run.ts"
   },
   "dependencies": {
     "@fontsource/chakra-petch": "^5.3.0",
@@ -26,6 +27,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.0"

@@ -20,7 +20,7 @@ export const RELICS = defineRelics({
     name: 'Duct Tape Roll',
     rarity: 'common',
     character: 'neutral',
-    hooks: [{ on: 'combatStart', effects: [block(6)] }],
+    hooks: [{ on: 'combatStart', effects: [block(7)] }],
     flavor: 'Fixes 90% of problems. The other 10% need more tape.',
   },
   mag_boots: {
@@ -44,9 +44,9 @@ export const RELICS = defineRelics({
     rarity: 'common',
     character: 'neutral',
     hooks: [],
-    run: { goldAfterCombat: 12 },
-    description: 'After each fight, gain 12 Credits (hazard pay).',
-    flavor: 'Solidarity, and a 12-Credit stipend per incident.',
+    run: { goldAfterCombat: 15 },
+    description: 'After each fight, gain 15 Credits (hazard pay).',
+    flavor: 'Solidarity, and a 15-Credit stipend per incident.',
   },
   hazard_vest: {
     name: 'Hi-Vis Hazard Vest',
@@ -86,7 +86,7 @@ export const RELICS = defineRelics({
     name: 'Scrap Magnet',
     rarity: 'uncommon',
     character: 'rigger',
-    hooks: [{ on: 'enemyDied', effects: [gain('scrap', 3)] }],
+    hooks: [{ on: 'enemyDied', effects: [gain('scrap', 3), draw(1)] }],
     flavor: 'What the enemy leaves behind is yours. That is just good salvage law.',
   },
   spare_fuse: {
