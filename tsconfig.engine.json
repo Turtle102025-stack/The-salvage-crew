@@ -1,0 +1,9 @@
+{
+  "//": "The engine and content must run headless (tests, simulator). No DOM types here, so using window/document/localStorage fails the type check.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["src/engine", "src/content"]
+}

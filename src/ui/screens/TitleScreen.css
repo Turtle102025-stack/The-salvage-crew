@@ -1,0 +1,201 @@
+.title-screen {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 20px;
+  padding: 32px 16px 24px;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(155, 107, 255, 0.14), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 75%, rgba(46, 196, 182, 0.12), transparent 70%),
+    var(--space-900);
+  overflow-x: hidden;
+}
+
+.title-header {
+  text-align: center;
+  max-width: 640px;
+}
+
+.title-logo {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-shadow: 4px 4px 0 var(--space-950);
+}
+
+.title-logo-small {
+  display: block;
+  font-size: 0.38em;
+  letter-spacing: 0.5em;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+
+.title-rule {
+  height: 14px;
+  margin: 14px auto 12px;
+  width: min(360px, 80%);
+  border: var(--outline);
+  border-radius: 3px;
+}
+
+.title-tagline {
+  margin: 0;
+  color: var(--text-dim);
+}
+
+.title-art {
+  width: min(640px, 100%);
+  height: auto;
+  overflow: visible;
+}
+
+/* --- Title art animation --- */
+.title-art .tug {
+  animation: tug-bob calc(6s / max(var(--anim-speed), 0.01)) ease-in-out infinite;
+}
+
+.title-art .flame {
+  transform-box: fill-box;
+  transform-origin: right center;
+  animation: flame-flicker 0.18s steps(2) infinite alternate;
+}
+
+.title-art .flame-core {
+  animation-duration: 0.12s;
+}
+
+.title-art .beacon {
+  animation: beacon-blink 1.6s steps(1) infinite;
+}
+
+.title-art .haul {
+  transform-box: view-box;
+  transform-origin: 404px 66px;
+  animation: haul-swing 5s ease-in-out infinite;
+}
+
+.title-art .debris {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.title-art .debris-a { animation: drift-spin 40s linear infinite; }
+.title-art .debris-b { animation: drift-spin 55s linear infinite reverse; }
+.title-art .debris-c { animation: drift-spin 25s linear infinite; }
+.title-art .debris-d { animation: drift-spin 32s linear infinite reverse; }
+
+@keyframes tug-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes flame-flicker {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.75); }
+}
+@keyframes beacon-blink {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0.25; }
+}
+@keyframes haul-swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes drift-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Work order panel --- */
+.work-order {
+  width: min(520px, 100%);
+  background: var(--space-800);
+  border: var(--outline);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 2px var(--steel-600) inset, 6px 6px 0 var(--space-950);
+  padding: 18px 20px;
+}
+
+.work-order h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.work-order-status {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--space-950);
+  background: var(--amber);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.work-order-note {
+  margin: 0 0 12px;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.work-order ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.work-order li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.work-order li.done {
+  color: var(--text);
+}
+
+.work-order .check {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--steel-400);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.work-order li.done .check {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--space-950);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.title-footer {
+  font-size: 0.8rem;
+  color: var(--steel-400);
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+}
